@@ -5,7 +5,7 @@
 using namespace Rcpp;
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(".collapsed_efd_cpp")]]
 Rcpp::List collapsed_efd_cpp(arma::mat data,
                              arma::colvec alpha,
                              arma::colvec beta,

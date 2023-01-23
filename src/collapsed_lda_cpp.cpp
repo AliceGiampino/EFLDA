@@ -5,7 +5,7 @@
 using namespace Rcpp;
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(".collapsed_lda_cpp")]]
 Rcpp::List collapsed_lda_cpp(arma::mat data,
                              arma::colvec alpha,
                              arma::colvec beta,
