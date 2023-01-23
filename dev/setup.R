@@ -14,7 +14,7 @@ usethis::use_description(
     URL = "https://github.com/AliceGiampino/EFLDA"
   )
 )
-usethis::use_lgpl_license( name = "Alice Giampino and Roberto Ascari" )
+usethis::use_lgpl_license()
 usethis::use_tidy_description()
 
 usethis::use_rcpp_armadillo()
