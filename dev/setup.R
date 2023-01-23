@@ -1,7 +1,7 @@
 # setup
 usethis::use_build_ignore("dev")
-#usethis::use_data_raw()
-devtools::document()
+usethis::use_rcpp()
+usethis::use_rcpp_armadillo()
 
 # Description
 usethis::use_description(
@@ -17,24 +17,8 @@ usethis::use_description(
 usethis::use_lgpl_license()
 usethis::use_tidy_description()
 
-usethis::use_rcpp_armadillo()
 usethis::use_package("LearnBayes")
 usethis::use_package("MASS")
-# usethis::use_package("spdep")
-# usethis::use_pipe(export = TRUE)
-# usethis::use_package("dplyr")
-# usethis::use_package("sf")
-# usethis::use_package("ggplot2")
-# usethis::use_package("spdep")
-# usethis::use_package("purrr")
-# usethis::use_package("parallel")
-# usethis::use_package("progress")
-# usethis::use_package("gganimate")
-# usethis::use_package("testthat", "Suggest")
-# usethis::use_package("utils", "Suggest")
-# usethis::use_package("methods")
-# usethis::use_package("stats")
-# usethis::use_vignette(name="epidsampler")
 
 
 # Read me
