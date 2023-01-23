@@ -1,7 +1,28 @@
+#' Collapsed Gibbs sampling
+#'
+#' @param data_DTM data in format DTM
+#' @param K number of topic
+#' @param alpha parameter of the Dirichlet
+#' @param beta parameter of the Dirichlet
+#' @param tau parameter of the EF change mean of clusters
+#' @param p probabilities vector
+#' @param type LDA or EFD
+#' @param thin thinning period
+#' @param niter number of iteration
+#' @param warmup percentage of the warmup
+#' @param seed of the analysis
+#' @param init.z initial values of the topic
+#' @param verbose if you want print of the iteration
+#' @param all.post True if you want all the niter samples from the posterior
+#'
+#' @return list of the results from the gibbs sampling
+#' @export
+#'
+#' @examples
 collapsed_gibbs <- function(data_DTM, # data_DTM is a DTM
                              K, alpha=NULL, beta=NULL, tau=NULL, p=NULL,type="LDA",
                              thin=1, niter=5000, warmup=0.5, seed=42, init.z=NULL, verbose=T,
-                             all.post = F# Do you want all the niter samples from the posterior?
+                             all.post = F
 ){
   data <- DTM_to_matrix(data_DTM)
 
