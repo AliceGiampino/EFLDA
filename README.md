@@ -8,10 +8,9 @@ The goal of EFLDA is to ...
 
 ## Installation
 
-You can install the development version of EFLDA like so:
+You can install the development version of EFLDA from [GitHub](https://github.com/) with:
 
 ``` r
-# The easiest way to get EFLDA is to install it from GitHub:
 # install.packages("devtools")
 devtools::install_github("AliceGiampino/EFLDA")
 ```

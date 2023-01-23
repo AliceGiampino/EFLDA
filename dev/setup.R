@@ -1,6 +1,5 @@
 # setup
 usethis::use_build_ignore("dev")
-usethis::use_rcpp()
 usethis::use_rcpp_armadillo()
 
 # Description
