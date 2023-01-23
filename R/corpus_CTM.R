@@ -1,0 +1,26 @@
+corpus_CTM <- function(D, V, K, mu, Sigma, beta, eps){
+  Phi <- LearnBayes::rdirichlet(K, beta)
+  corpus <- lapply(1:D, function(x){
+    N_d <- rpois(1, eps)
+
+    eta <- MASS::mvrnorm(n = 1, mu, Sigma)
+    theta_d <- exp(eta)/(1+sum(exp(eta)))
+    theta_d <- as.vector(c(theta_d, 1-sum(theta_d)))
+
+    # doc_d e' una matrice con 0 e 1
+    doc_d <- matrix(0, ncol=V, nrow=N_d)
+    #colnames(doc_d) <- as.character(1:V)
+
+    # estraggo i topic di ogni parola del documento:
+    z_d <- sample(1:K, N_d, prob=theta_d, replace=T)
+
+    for(k in unique(z_d)){
+      ww_k <- sample(1:V, sum(z_d==k), prob=Phi[k,], replace=T)
+      doc_d[cbind(which(z_d==k), ww_k)] <- 1
+    }
+
+    return(list(doc=doc_d, topic_words=z_d, theta_d=theta_d, Phi=Phi, N_d=N_d))
+  })
+  #lapply(corpus, function(x) x$doc)
+  return(corpus)
+}
