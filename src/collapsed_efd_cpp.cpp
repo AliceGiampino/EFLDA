@@ -1,7 +1,7 @@
 // I only include RcppArmadillo.h which pulls Rcpp.h in for us
-#include <RcppArmadillo.h>
+#include "RcppArmadillo.h"
 // [[Rcpp::depends(RcppArmadillo)]]
-#include <RcppArmadilloExtensions/sample.h>
+#include "RcppArmadilloExtensions/sample.h"
 using namespace Rcpp;
 
 
