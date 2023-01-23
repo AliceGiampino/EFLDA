@@ -1,5 +1,12 @@
+#' Corpus alternative
+#'
+#' @param corpus a list with: x$doc and x$topic_words
+#'
+#' @return a matrix with column Word, Doc and Topic
+#' @export
+#'
+#' @examples
 Corpus_alternative <- function(corpus){
-  # from a list with: x$doc and x$topic_words, to a matrix with column Word, Doc and Topic
   N <- sum(unlist(lapply(corpus, function(x) nrow(x$doc))))
 
   Corpus_alternative <- matrix(NA, ncol=3, nrow=N)

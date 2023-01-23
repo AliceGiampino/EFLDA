@@ -1,3 +1,17 @@
+#' Corpus from Correlated Topic Model
+#'
+#' @param D number of documents
+#' @param V number of words in the vocabulary
+#' @param K number of topics
+#' @param mu mean of the multivariate Normal
+#' @param Sigma variance of the multivariate Normal
+#' @param beta parameter of the Dirichlet
+#' @param eps vector of (non-negative) means for the Poisson
+#'
+#' @return a corpus
+#' @export
+#'
+#' @examples
 corpus_CTM <- function(D, V, K, mu, Sigma, beta, eps){
   Phi <- LearnBayes::rdirichlet(K, beta)
   corpus <- lapply(1:D, function(x){
@@ -7,11 +21,11 @@ corpus_CTM <- function(D, V, K, mu, Sigma, beta, eps){
     theta_d <- exp(eta)/(1+sum(exp(eta)))
     theta_d <- as.vector(c(theta_d, 1-sum(theta_d)))
 
-    # doc_d e' una matrice con 0 e 1
+    # doc_d is a matrix with 0 and 1
     doc_d <- matrix(0, ncol=V, nrow=N_d)
     #colnames(doc_d) <- as.character(1:V)
 
-    # estraggo i topic di ogni parola del documento:
+    # extract topic for each word in a document:
     z_d <- sample(1:K, N_d, prob=theta_d, replace=T)
 
     for(k in unique(z_d)){

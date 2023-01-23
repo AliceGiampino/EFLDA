@@ -1,3 +1,15 @@
+#' Random realization from Extended Flexible Dirichlet
+#'
+#' @param n number of words
+#' @param alpha parameter of the Dirichlet
+#' @param p vector of probabilities
+#' @param tau parameter that changes the mean of the clusters
+#' @param label if True report the topic?
+#'
+#' @return
+#' @export
+#'
+#' @examples
 rEFDir <- function(n,alpha,p,tau,label=FALSE){
   D<-length(alpha)
   multin<-matrix(rmultinom(n,1,p), ncol=D,byrow=TRUE)

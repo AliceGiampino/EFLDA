@@ -19,7 +19,7 @@ usethis::use_tidy_description()
 
 usethis::use_rcpp_armadillo()
 usethis::use_package("LearnBayes")
-# usethis::use_package("stats")
+usethis::use_package("MASS")
 # usethis::use_package("spdep")
 # usethis::use_pipe(export = TRUE)
 # usethis::use_package("dplyr")

@@ -1,5 +1,12 @@
+#' Corpus from DTM
+#'
+#' @param corpus matrix with column Doc and Word
+#'
+#' @return DTM
+#' @export
+#'
+#' @examples
 corpus_DTM <- function(corpus){
-  # from a matrix with column Doc and Word to DTM
   D <- length(corpus)
   V <- ncol(corpus[[1]]$doc)
 

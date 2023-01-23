@@ -1,3 +1,18 @@
+#' Corpus from Extended Flexible Dirichlet
+#'
+#' @param D number of documents
+#' @param V number of words in a vocabulary
+#' @param K number of topics
+#' @param alpha parameter of the Dirichlet
+#' @param tau parameter that changes the mean of the clusters
+#' @param p vector of probabilities
+#' @param beta parameter of the Dirichlet
+#' @param eps vector of (non-negative) means for the Poisson
+#'
+#' @return
+#' @export
+#'
+#' @examples
 corpus_EFD <- function(D, V, K, alpha, tau, p, beta, eps){
   Phi <- LearnBayes::rdirichlet(K, beta)
   corpus <- lapply(1:D, function(x){
