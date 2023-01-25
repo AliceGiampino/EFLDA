@@ -30,7 +30,8 @@ usethis::use_readme_md( open = FALSE )
 
 ## Use tests: if you want to use tests
 # usethis::use_testthat()
-install.packages("devtools", force = T)
+## Reinstall devtools from R 3.x to R 4.x
+install.packages(c("devtools", "pkgload"), force = T)
 
 # Develop -----------------------------------------------------------------
 
