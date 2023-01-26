@@ -21,6 +21,9 @@ usethis::use_readme_md( open = FALSE )
 
 usethis::use_package("LearnBayes")
 usethis::use_package("MASS")
+usethis::use_package("tm")
+usethis::use_package("stringr")
+usethis::use_package("stats")
 usethis::use_rcpp_armadillo()
 usethis::use_namespace(roxygen = TRUE)
 

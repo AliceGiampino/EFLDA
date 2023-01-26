@@ -16,7 +16,10 @@ RoxygenNote: 7.2.3
 Imports: 
     LearnBayes,
     MASS,
-    Rcpp
+    Rcpp,
+    stats,
+    stringr,
+    tm
 LinkingTo: 
     Rcpp,
     RcppArmadillo

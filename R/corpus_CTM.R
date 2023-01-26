@@ -14,7 +14,7 @@
 corpus_CTM <- function(D, V, K, mu, Sigma, beta, eps){
   Phi <- LearnBayes::rdirichlet(K, beta)
   corpus <- lapply(1:D, function(x){
-    N_d <- rpois(1, eps)
+    N_d <- stats::rpois(1, eps)
 
     eta <- MASS::mvrnorm(n = 1, mu, Sigma)
     theta_d <- exp(eta)/(1+sum(exp(eta)))

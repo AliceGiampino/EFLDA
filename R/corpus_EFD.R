@@ -14,7 +14,7 @@
 corpus_EFD <- function(D, V, K, alpha, tau, p, beta, eps){
   Phi <- LearnBayes::rdirichlet(K, beta)
   corpus <- lapply(1:D, function(x){
-    N_d <- rpois(1, eps)
+    N_d <- stats::rpois(1, eps)
 
     theta_d <- as.vector(rEFDir(1, alpha=alpha, tau=tau, p=p,label=F))
 

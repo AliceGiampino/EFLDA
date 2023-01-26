@@ -9,13 +9,13 @@ Corpus_alternative_word <- function(doc_raw, K){
 
   f <- lapply(doc_raw, function(d){
     dd <- tolower(d)
-    dd <- removePunctuation(dd)
-    dd <- removeNumbers(dd)
+    dd <- tm::removePunctuation(dd)
+    dd <- tm::removeNumbers(dd)
     dd <- unlist(strsplit(dd, " "))
-    dd <- dd[!(dd %in% stopwords())]
-    dd <- stemDocument(dd)
-    dd <- stripWhitespace(dd)
-    dd <- str_subset(dd, ".+")
+    dd <- dd[!(dd %in% tm::stopwords())]
+    dd <- tm::stemDocument(dd)
+    dd <- tm::stripWhitespace(dd)
+    dd <- stringr::str_subset(dd, ".+")
     return(dd)
   })
 

@@ -13,7 +13,7 @@
 corpus_LDA <- function(D, V, K, alpha, beta, eps){
   Phi <- LearnBayes::rdirichlet(K, beta)
   corpus <-lapply(1:D, function(x){
-    N_d <- rpois(1, eps)
+    N_d <- stats::rpois(1, eps)
 
     theta_d <- as.vector(LearnBayes::rdirichlet(1, alpha))
 
