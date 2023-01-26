@@ -4,7 +4,7 @@
 #' @param K number of topic
 #' @param alpha parameter of the Dirichlet
 #' @param beta parameter of the Dirichlet
-#' @param tau parameter of the EF change mean of clusters
+#' @param tau parameter of the EF changes mean of clusters
 #' @param p probabilities vector
 #' @param type LDA or EFD
 #' @param thin thinning period
