@@ -21,7 +21,6 @@ usethis::use_package("LearnBayes")
 usethis::use_package("MASS")
 usethis::use_rcpp_armadillo()
 usethis::use_namespace(roxygen = TRUE)
-devtools::document()
 
 # Tests
 # usethis::use_testthat()
