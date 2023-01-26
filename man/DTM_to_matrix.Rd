@@ -7,7 +7,7 @@
 DTM_to_matrix(corpus_dtm)
 }
 \arguments{
-\item{corpus_dtm}{}
+\item{corpus_dtm}{a dtm corpus}
 }
 \value{
 a matrix

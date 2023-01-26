@@ -1,6 +1,6 @@
 #' DTM to matrix
 #'
-#' @param corpus_dtm
+#' @param corpus_dtm a dtm corpus
 #'
 #' @return a matrix
 #' @export
