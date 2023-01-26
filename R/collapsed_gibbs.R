@@ -17,8 +17,6 @@
 #'
 #' @return list of the results from the gibbs sampling
 #' @export
-#'
-#' @examples
 collapsed_gibbs <- function(data_DTM, # data_DTM is a DTM
                              K, alpha=NULL, beta=NULL, tau=NULL, p=NULL,type="LDA",
                              thin=1, niter=5000, warmup=0.5, seed=42, init.z=NULL, verbose=T,

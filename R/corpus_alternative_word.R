@@ -5,8 +5,6 @@
 #'
 #' @return list of corpus and vocabulary
 #' @export
-#'
-#' @examples
 Corpus_alternative_word <- function(doc_raw, K){
 
   f <- lapply(doc_raw, function(d){

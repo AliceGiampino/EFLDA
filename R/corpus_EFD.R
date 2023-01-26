@@ -9,10 +9,8 @@
 #' @param beta parameter of the Dirichlet
 #' @param eps vector of (non-negative) means for the Poisson
 #'
-#' @return
+#' @return a corpus
 #' @export
-#'
-#' @examples
 corpus_EFD <- function(D, V, K, alpha, tau, p, beta, eps){
   Phi <- LearnBayes::rdirichlet(K, beta)
   corpus <- lapply(1:D, function(x){

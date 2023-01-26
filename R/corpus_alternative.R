@@ -4,8 +4,6 @@
 #'
 #' @return a matrix with column Word, Doc and Topic
 #' @export
-#'
-#' @examples
 Corpus_alternative <- function(corpus){
   N <- sum(unlist(lapply(corpus, function(x) nrow(x$doc))))
 

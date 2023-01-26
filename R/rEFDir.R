@@ -6,10 +6,8 @@
 #' @param tau parameter that changes the mean of the clusters
 #' @param label if True report the topic?
 #'
-#' @return
+#' @return random realization from EFD
 #' @export
-#'
-#' @examples
 rEFDir <- function(n,alpha,p,tau,label=FALSE){
   D<-length(alpha)
   multin<-matrix(rmultinom(n,1,p), ncol=D,byrow=TRUE)

@@ -5,7 +5,9 @@ Authors@R: c(
     person("Alice", "Giampino", , "a.giampino@campus.unimib.it", role = c("cre", "aut")),
     person("Roberto", "Ascari", , "roberto.ascari@unimib.it", role = "aut")
   )
-Description: Extended Flexible Latent Dirichlet Allocation
+Description: Extended Flexible Latent Dirichlet Allocation.  A tool useful
+    for topic modelling analyses.  Positive correlation between topic
+    allowed.
 License: LGPL (>= 3)
 URL: https://github.com/AliceGiampino/EFLDA
 Encoding: UTF-8

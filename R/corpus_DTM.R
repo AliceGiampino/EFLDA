@@ -4,8 +4,6 @@
 #'
 #' @return DTM
 #' @export
-#'
-#' @examples
 corpus_DTM <- function(corpus){
   D <- length(corpus)
   V <- ncol(corpus[[1]]$doc)

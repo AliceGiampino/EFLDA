@@ -10,8 +10,7 @@
 #'
 #' @return a corpus
 #' @export
-#'
-#' @examples
+
 corpus_CTM <- function(D, V, K, mu, Sigma, beta, eps){
   Phi <- LearnBayes::rdirichlet(K, beta)
   corpus <- lapply(1:D, function(x){

@@ -4,8 +4,6 @@
 #'
 #' @return a matrix
 #' @export
-#'
-#' @examples
 DTM_to_matrix <- function(corpus_dtm){
   # from DTM to a matrix with columns Word and Doc
   N_words <- sum(corpus_dtm)

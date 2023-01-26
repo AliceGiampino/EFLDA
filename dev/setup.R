@@ -8,7 +8,9 @@ usethis::use_description(
     `Authors@R` = "c(
     person('Alice', 'Giampino', email = 'a.giampino@campus.unimib.it', role = c('cre', 'aut')),
     person('Roberto', 'Ascari', email = 'roberto.ascari@unimib.it', role = c('aut')))",
-    Description = "Extended Flexible Latent Dirichlet Allocation",
+    Description = "Extended Flexible Latent Dirichlet Allocation.
+    A tool useful for topic modelling analyses.
+    Positive correlation between topic allowed.",
     URL = "https://github.com/AliceGiampino/EFLDA"
   )
 )

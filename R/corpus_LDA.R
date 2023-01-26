@@ -9,8 +9,6 @@
 #'
 #' @return a corpus
 #' @export
-#'
-#' @examples
 
 corpus_LDA <- function(D, V, K, alpha, beta, eps){
   Phi <- LearnBayes::rdirichlet(K, beta)
