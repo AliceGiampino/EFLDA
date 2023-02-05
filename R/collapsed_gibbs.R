@@ -1,6 +1,6 @@
 #' Collapsed Gibbs sampling
 #'
-#' @param data_DTM data in format DTM
+#' @param data_DTM data in format DTM, it can be also a matrix with columns Word and Doc
 #' @param K number of topic
 #' @param alpha parameter of the Dirichlet
 #' @param beta parameter of the Dirichlet
@@ -17,12 +17,13 @@
 #'
 #' @return list of the results from the gibbs sampling
 #' @export
-collapsed_gibbs <- function(data_DTM, # data_DTM is a DTM
+collapsed_gibbs <- function(data_DTM,
+                            # data_DTM is a DTM, it can be also a matrix with columns Word and Doc
                              K, alpha=NULL, beta=NULL, tau=NULL, p=NULL,type="LDA",
                              thin=1, niter=5000, warmup=0.5, seed=42, init.z=NULL, verbose=T,
                              all.post = F
 ){
-  data <- DTM_to_matrix(data_DTM)
+  if(class(data)[1]!="matrix") data <- DTM_to_matrix(data_DTM)
 
   if(!(type %in% c("LDA","EFD"))) stop("type must be either LDA or EFD.")
   if(type=="EFD" & (is.null(tau)|is.null(p))) stop("You must specify both tau and p.")
