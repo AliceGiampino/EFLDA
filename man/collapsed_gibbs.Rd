@@ -22,7 +22,7 @@ collapsed_gibbs(
 )
 }
 \arguments{
-\item{data_DTM}{data in format DTM}
+\item{data_DTM}{data in format DTM, it can be also a matrix with columns Word and Doc}
 
 \item{K}{number of topic}
 
@@ -30,7 +30,7 @@ collapsed_gibbs(
 
 \item{beta}{parameter of the Dirichlet}
 
-\item{tau}{parameter of the EF change mean of clusters}
+\item{tau}{parameter of the EFD changes mean of clusters}
 
 \item{p}{probabilities vector}
 
