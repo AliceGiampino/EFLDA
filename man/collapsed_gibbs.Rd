@@ -22,7 +22,7 @@ collapsed_gibbs(
 )
 }
 \arguments{
-\item{data_DTM}{data in format DTM, it can be also a matrix with columns Word and Doc}
+\item{data_DTM}{data in format DTM, it can be also a matrix with columns Word and Doc, or a data.frame}
 
 \item{K}{number of topic}
 
