@@ -25,7 +25,8 @@ usethis::use_package("tm")
 usethis::use_package("stringr")
 usethis::use_package("stats")
 usethis::use_rcpp_armadillo()
-usethis::use_namespace(roxygen = TRUE)
+devtools::document()
+# usethis::use_namespace(roxygen = TRUE)
 
 # Tests
 # usethis::use_testthat()
