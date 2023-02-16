@@ -13,5 +13,7 @@ corpus_DTM <- function(corpus){
 
   for(d in 1:D) DTM[d,] <- colSums(corpus[[d]]$doc)
 
+  class(DTM) <- "DTM"
+
   return(DTM)
 }

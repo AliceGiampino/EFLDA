@@ -23,7 +23,8 @@ collapsed_gibbs <- function(data_DTM,
                              thin=1, niter=5000, warmup=0.5, seed=42, init.z=NULL, verbose=T,
                              all.post = F
 ){
-  if(class(data)[1]!="matrix"& class(data)[1]!="data.frame") data <- DTM_to_matrix(data_DTM)
+  #if(class(data)[1]!="matrix"& class(data)[1]!="data.frame") data <- DTM_to_matrix(data_DTM)
+  if(class(data)[1]=="DTM") data <- DTM_to_matrix(data_DTM)
   if(class(data)[1]=="matrix") data <- as.data.frame(data)
 
   if(!(type %in% c("LDA","EFD"))) stop("type must be either LDA or EFD.")
