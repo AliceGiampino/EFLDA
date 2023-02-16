@@ -41,9 +41,9 @@ collapsed_gibbs <- function(data_DTM,
 
   if(is.null(init.z)){
     set.seed(seed)
-    data$"Init_Topic" <- as.factor(sample(1:K, N, T))
+    data$Init_Topic <- as.factor(sample(1:K, nrow(data), T))
   } else {
-    data$"Init_Topic" <- as.factor(init.z)
+    data$Init_Topic <- as.factor(init.z)
   }
   if(all.post) {
     keep_index <- seq(1:niter)

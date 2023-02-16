@@ -25,5 +25,7 @@ DTM_to_matrix <- function(corpus_dtm){
     }
   }
 
-  return(as.data.frame(data_matrix))
+
+
+  return(as.matrix(data_matrix))
 }
