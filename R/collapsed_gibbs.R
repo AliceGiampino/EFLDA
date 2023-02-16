@@ -24,8 +24,9 @@ collapsed_gibbs <- function(data_DTM,
                              all.post = F
 ){
   #if(class(data)[1]!="matrix"& class(data)[1]!="data.frame") data <- DTM_to_matrix(data_DTM)
-  if(class(data)[1]=="DTM") data <- DTM_to_matrix(data_DTM)
-  if(class(data)[1]=="matrix") data <- as.data.frame(data)
+  if(class(data_DTM)[1]=="DTM") data <- DTM_to_matrix(data_DTM)
+  if(class(data_DTM)[1]=="matrix") data <- as.data.frame(data)
+  if(class(data_DTM)[1]=="data.frame") data <- data_DTM
 
   if(!(type %in% c("LDA","EFD"))) stop("type must be either LDA or EFD.")
   if(type=="EFD" & (is.null(tau)|is.null(p))) stop("You must specify both tau and p.")

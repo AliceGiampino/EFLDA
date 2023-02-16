@@ -1,5 +1,5 @@
 Package: EFLDA
-Title: Gradient
+Title: EFLDA - The extended flexible latent Dirichlet allocation
 Version: 0.0.0.9000
 Authors@R: c(
     person("Alice", "Giampino", , "a.giampino@campus.unimib.it", role = c("cre", "aut")),
