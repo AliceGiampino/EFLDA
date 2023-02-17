@@ -4,7 +4,7 @@ usethis::use_build_ignore("dev")
 # Description
 usethis::use_description(
   list(
-    Title = "Gradient",
+    Title = "Extended Flexible Latent Dirichlet Allocation",
     `Authors@R` = "c(
     person('Alice', 'Giampino', email = 'a.giampino@campus.unimib.it', role = c('cre', 'aut')),
     person('Roberto', 'Ascari', email = 'roberto.ascari@unimib.it', role = c('aut')))",
