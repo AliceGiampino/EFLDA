@@ -165,7 +165,7 @@ Rcpp::List collapsed_lda_cpp(arma::mat data,
                             Rcpp::Named("data")=data,
                             Rcpp::Named("alpha")=alpha,
                             Rcpp::Named("beta")=beta,
-                            Rcpp::Named("type_model")="EFD");
+                            Rcpp::Named("type_model")="LDA");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
