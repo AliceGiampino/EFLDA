@@ -161,7 +161,8 @@ Rcpp::List collapsed_lda_cpp(arma::mat data,
 
   return Rcpp::List::create(Rcpp::Named("z_post")=z_post,
                             Rcpp::Named("theta_post")=theta_post,
-                            Rcpp::Named("phi_post")=phi_post);
+                            Rcpp::Named("phi_post")=phi_post,
+                            Rcpp::Named("data")=data);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -381,5 +382,6 @@ Rcpp::List collapsed_efd_cpp(arma::mat data,
 
   return Rcpp::List::create(Rcpp::Named("z_post")=z_post,
                             Rcpp::Named("theta_post")=theta_post,
-                            Rcpp::Named("phi_post")=phi_post);
+                            Rcpp::Named("phi_post")=phi_post,
+                            Rcpp::Named("data")=data);
 }
