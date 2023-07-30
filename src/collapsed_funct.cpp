@@ -165,6 +165,9 @@ Rcpp::List collapsed_lda_cpp(arma::mat data,
                             Rcpp::Named("data")=data,
                             Rcpp::Named("alpha")=alpha,
                             Rcpp::Named("beta")=beta,
+                            Rcpp::Named("niter")=niter,
+                            Rcpp::Named("thin")=thin,
+                            Rcpp::Named("keep_index")=keep_index,
                             Rcpp::Named("type_model")="LDA");
 }
 
@@ -391,5 +394,8 @@ Rcpp::List collapsed_efd_cpp(arma::mat data,
                             Rcpp::Named("beta")=beta,
                             Rcpp::Named("tau")=tau,
                             Rcpp::Named("p")=p,
+                            Rcpp::Named("niter")=niter,
+                            Rcpp::Named("thin")=thin,
+                            Rcpp::Named("keep_index")=keep_index,
                             Rcpp::Named("type_model")="EFD");
 }
