@@ -14,6 +14,7 @@
 #' @param init.z initial values of the topic
 #' @param verbose if you want print of the iteration
 #' @param all.post True if you want all the niter samples from the posterior
+#' @param data_output True if you want the training data in the output
 #'
 #' @return list of the results from the gibbs sampling
 #' @export
@@ -21,7 +22,7 @@ collapsed_gibbs <- function(data_DTM,
                             # data_DTM is a DTM, it can be also a matrix with columns Word and Doc or data.frame
                              K, alpha=NULL, beta=NULL, tau=NULL, p=NULL,type="LDA",
                              thin=1, niter=5000, warmup=0.5, seed=42, init.z=NULL, verbose=T,
-                             all.post = F
+                             all.post = F, data_output=F
 ){
   #if(class(data)[1]!="matrix"& class(data)[1]!="data.frame") data <- DTM_to_matrix(data_DTM)
   if(class(data_DTM)[1]=="DTM") data <- DTM_to_matrix(data_DTM)
@@ -33,6 +34,7 @@ collapsed_gibbs <- function(data_DTM,
   if(sum(p) != 1 & any(p<=0)) stop("Elements of p must be in the (0,1) interval and must suming to 1.")
 
   if(verbose==T){vb <- 1}else{vb <- 0}
+  if(data_output==T){d_ot <- 1}else{d_out <- 0}
 
   colnames(data) <- c("Word", "Doc")
   #init.z = NULL
@@ -58,11 +60,15 @@ collapsed_gibbs <- function(data_DTM,
   data <- data.matrix(data)
   if(type=="LDA"){
     res <- collapsed_lda_cpp(data=data, K=K, alpha=alpha, beta=beta,
-                             thin=thin, niter=niter, warmup=warmup, keep_index = keep_index, verbose = vb)
+                             thin=thin, niter=niter, warmup=warmup, keep_index = keep_index, verbose = vb, d_ot=d_ot)
   } else if(type=="EFD"){
     res <- collapsed_efd_cpp(data=data, K=K, alpha=alpha, beta=beta, tau=tau, p=p,
-                             thin=thin, niter=niter, warmup=warmup, keep_index = keep_index, verbose = vb)
+                             thin=thin, niter=niter, warmup=warmup, keep_index = keep_index, verbose = vb, d_ot=d_ot)
   }
+  if(data_output==T){
 
+    res <- list.append(res,data=data)
+
+  }
   return(res)
 }
