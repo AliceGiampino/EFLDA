@@ -35,7 +35,9 @@ collapsed_gibbs <- function(data_DTM,
 
   if(verbose==T){vb <- 1; nupd <- round(niter/10)}else{vb <- 0; nupd=0}
 
-  colnames(data) <- c("Word", "Doc")
+  if(dim(data)[2]==2){colnames(data) <- c("Word", "Doc")}
+  if(dim(data)[2]==3){colnames(data) <- c("Word", "Doc", "Init_Topic")}
+
   #init.z = NULL
   seed = seed
   N = nrow(data_DTM)
@@ -69,8 +71,8 @@ collapsed_gibbs <- function(data_DTM,
   if(data_output==T){
 
     data <- as.data.frame(data)
-    colnames(data) <- c("Word", "Doc", "Topic_Init", "Init_Topic")
-    res <- list.append(res,data=data[,c(1,2,4)])
+    colnames(data) <- c("Word", "Doc", "Init_Topic")
+    res <- list.append(res,data=data)
 
   }
   return(res)
