@@ -68,6 +68,8 @@ collapsed_gibbs <- function(data_DTM,
   }
   if(data_output==T){
 
+    data <- as.data.frame(data)
+    colnames(data) <- c("Word", "Doc", "Topic_Init", "Init_Topic")
     res <- list.append(res,data=data[,c(1,2,4)])
 
   }
