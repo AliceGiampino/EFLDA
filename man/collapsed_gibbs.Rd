@@ -18,7 +18,8 @@ collapsed_gibbs(
   seed = 42,
   init.z = NULL,
   verbose = T,
-  all.post = F
+  all.post = F,
+  data_output = F
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ collapsed_gibbs(
 \item{verbose}{if you want print of the iteration}
 
 \item{all.post}{True if you want all the niter samples from the posterior}
+
+\item{data_output}{True if you want the training data in the output}
 }
 \value{
 list of the results from the gibbs sampling
