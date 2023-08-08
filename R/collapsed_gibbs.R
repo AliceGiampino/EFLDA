@@ -68,7 +68,7 @@ collapsed_gibbs <- function(data_DTM,
   }
   if(data_output==T){
 
-    res <- list.append(res,data=data[,1:3])
+    res <- list.append(res,data=data[,c(1,2,4)])
 
   }
   return(res)
