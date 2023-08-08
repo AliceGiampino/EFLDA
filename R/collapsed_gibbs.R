@@ -33,8 +33,7 @@ collapsed_gibbs <- function(data_DTM,
   if(type=="EFD" & (is.null(tau)|is.null(p))) stop("You must specify both tau and p.")
   if(sum(p) != 1 & any(p<=0)) stop("Elements of p must be in the (0,1) interval and must suming to 1.")
 
-  if(verbose==T){vb <- 1}else{vb <- 0}
-  if(data_output==T){d_ot <- 1}else{d_out <- 0}
+  if(verbose==T){vb <- 1; nupd <- round(niter/10)}else{vb <- 0; nupd=0}
 
   colnames(data) <- c("Word", "Doc")
   #init.z = NULL
@@ -60,14 +59,16 @@ collapsed_gibbs <- function(data_DTM,
   data <- data.matrix(data)
   if(type=="LDA"){
     res <- collapsed_lda_cpp(data=data, K=K, alpha=alpha, beta=beta,
-                             thin=thin, niter=niter, warmup=warmup, keep_index = keep_index, verbose = vb, d_ot=d_ot)
+                             thin=thin, niter=niter, warmup=warmup, keep_index = keep_index,
+                             verbose = vb, nupd = nupd)
   } else if(type=="EFD"){
     res <- collapsed_efd_cpp(data=data, K=K, alpha=alpha, beta=beta, tau=tau, p=p,
-                             thin=thin, niter=niter, warmup=warmup, keep_index = keep_index, verbose = vb, d_ot=d_ot)
+                             thin=thin, niter=niter, warmup=warmup, keep_index = keep_index,
+                             verbose = vb, nupd = nupd)
   }
   if(data_output==T){
 
-    res <- list.append(res,data=data)
+    res <- list.append(res,data=data[,1:3])
 
   }
   return(res)

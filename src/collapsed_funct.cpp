@@ -14,7 +14,8 @@ Rcpp::List collapsed_lda_cpp(arma::mat data,
                              int niter,
                              double warmup,
                              arma::colvec keep_index,
-                             int verbose){
+                             int verbose,
+                             int nupd = 0){
 
   // data is a matrix with columns Word, Doc, Init_Topic (0, 1, 2)
   // alpha is the vector of alpha for the Dirichlet distr over topics
@@ -69,9 +70,26 @@ Rcpp::List collapsed_lda_cpp(arma::mat data,
   int n_post = keep_index.size();
   arma::mat z_post(n_post, N);
 
+  // initialize print iteration
+  if(nupd == 0){
+    nupd = (int) (niter / 10);
+  }
+
+  int start_s = clock();
+  int current_s;
+
   for(int iter=0; iter<niter; iter++){
 
-    if (verbose > 0) Rprintf("Iteration number %d over %i \n", iter+1, niter);
+    //if (verbose > 0) Rprintf("Iteration number %d over %i \n", iter+1, niter);
+
+    if(verbose > 0){
+      // print the current completed work
+      if((iter + 1) % nupd == 0){
+        current_s = clock();
+        Rcpp::Rcout << "Completed:\t" << (iter + 1) << "/" << niter << " - in " <<
+          double(current_s-start_s)/CLOCKS_PER_SEC << " sec\n";
+      }
+    }
 
     for(int i=0; i<N; i++){
       int word = data.col(0)(i);
@@ -184,7 +202,8 @@ Rcpp::List collapsed_efd_cpp(arma::mat data,
                              int niter,
                              double warmup,
                              arma::colvec keep_index,
-                             int verbose){
+                             int verbose,
+                             int nupd = 0){
 
   // data is a matrix with columns Word, Doc, Init_Topic (0, 1, 2)
   // alpha is the vector of alpha for the Dirichlet distr over topics
@@ -253,10 +272,26 @@ Rcpp::List collapsed_efd_cpp(arma::mat data,
   arma::colvec log_t_long(K);
   arma::colvec logsum(2);
   arma::colvec t1(K);
+  // initialize print iteration
+  if(nupd == 0){
+    nupd = (int) (niter / 10);
+  }
+
+  int start_s = clock();
+  int current_s;
 
   for(int iter=0; iter<niter; iter++){
 
-    if (verbose > 0) Rprintf("Iteration number %d over %i \n", iter+1, niter);
+    //if (verbose > 0) Rprintf("Iteration number %d over %i \n", iter+1, niter);
+
+    if(verbose > 0){
+      // print the current completed work
+      if((iter + 1) % nupd == 0){
+        current_s = clock();
+        Rcpp::Rcout << "Completed:\t" << (iter + 1) << "/" << niter << " - in " <<
+          double(current_s-start_s)/CLOCKS_PER_SEC << " sec\n";
+      }
+    }
 
     for(int i=0; i<N; i++){
       int word = data.col(0)(i);

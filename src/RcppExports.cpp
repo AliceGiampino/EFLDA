@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // collapsed_lda_cpp
-Rcpp::List collapsed_lda_cpp(arma::mat data, arma::colvec alpha, arma::colvec beta, int K, int thin, int niter, double warmup, arma::colvec keep_index, int verbose, int d_ot);
-RcppExport SEXP _EFLDA_collapsed_lda_cpp(SEXP dataSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP KSEXP, SEXP thinSEXP, SEXP niterSEXP, SEXP warmupSEXP, SEXP keep_indexSEXP, SEXP verboseSEXP, SEXP d_otSEXP) {
+Rcpp::List collapsed_lda_cpp(arma::mat data, arma::colvec alpha, arma::colvec beta, int K, int thin, int niter, double warmup, arma::colvec keep_index, int verbose, int nupd);
+RcppExport SEXP _EFLDA_collapsed_lda_cpp(SEXP dataSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP KSEXP, SEXP thinSEXP, SEXP niterSEXP, SEXP warmupSEXP, SEXP keep_indexSEXP, SEXP verboseSEXP, SEXP nupdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -26,14 +26,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type warmup(warmupSEXP);
     Rcpp::traits::input_parameter< arma::colvec >::type keep_index(keep_indexSEXP);
     Rcpp::traits::input_parameter< int >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< int >::type d_ot(d_otSEXP);
-    rcpp_result_gen = Rcpp::wrap(collapsed_lda_cpp(data, alpha, beta, K, thin, niter, warmup, keep_index, verbose, d_ot));
+    Rcpp::traits::input_parameter< int >::type nupd(nupdSEXP);
+    rcpp_result_gen = Rcpp::wrap(collapsed_lda_cpp(data, alpha, beta, K, thin, niter, warmup, keep_index, verbose, nupd));
     return rcpp_result_gen;
 END_RCPP
 }
 // collapsed_efd_cpp
-Rcpp::List collapsed_efd_cpp(arma::mat data, arma::colvec alpha, arma::colvec beta, arma::colvec tau, arma::colvec p, int K, int thin, int niter, double warmup, arma::colvec keep_index, int verbose, int d_ot);
-RcppExport SEXP _EFLDA_collapsed_efd_cpp(SEXP dataSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP tauSEXP, SEXP pSEXP, SEXP KSEXP, SEXP thinSEXP, SEXP niterSEXP, SEXP warmupSEXP, SEXP keep_indexSEXP, SEXP verboseSEXP, SEXP d_otSEXP) {
+Rcpp::List collapsed_efd_cpp(arma::mat data, arma::colvec alpha, arma::colvec beta, arma::colvec tau, arma::colvec p, int K, int thin, int niter, double warmup, arma::colvec keep_index, int verbose, int nupd);
+RcppExport SEXP _EFLDA_collapsed_efd_cpp(SEXP dataSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP tauSEXP, SEXP pSEXP, SEXP KSEXP, SEXP thinSEXP, SEXP niterSEXP, SEXP warmupSEXP, SEXP keep_indexSEXP, SEXP verboseSEXP, SEXP nupdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -48,8 +48,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type warmup(warmupSEXP);
     Rcpp::traits::input_parameter< arma::colvec >::type keep_index(keep_indexSEXP);
     Rcpp::traits::input_parameter< int >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< int >::type d_ot(d_otSEXP);
-    rcpp_result_gen = Rcpp::wrap(collapsed_efd_cpp(data, alpha, beta, tau, p, K, thin, niter, warmup, keep_index, verbose, d_ot));
+    Rcpp::traits::input_parameter< int >::type nupd(nupdSEXP);
+    rcpp_result_gen = Rcpp::wrap(collapsed_efd_cpp(data, alpha, beta, tau, p, K, thin, niter, warmup, keep_index, verbose, nupd));
     return rcpp_result_gen;
 END_RCPP
 }
