@@ -26,8 +26,8 @@ collapsed_gibbs <- function(data_DTM,
 ){
   #if(class(data)[1]!="matrix"& class(data)[1]!="data.frame") data <- DTM_to_matrix(data_DTM)
   if(class(data_DTM)[1]=="DTM") data <- DTM_to_matrix(data_DTM)
-  if(class(data_DTM)[1]=="matrix") data <- as.data.frame(data)
-  if(class(data_DTM)[1]=="data.frame") data <- data_DTM
+  if(class(data_DTM)[1]=="data.frame") data <- as.data.frame(data_DTM)
+  if(class(data_DTM)[1]=="matrix") data <- data_DTM
 
   if(!(type %in% c("LDA","EFD"))) stop("type must be either LDA or EFD.")
   if(type=="EFD" & (is.null(tau)|is.null(p))) stop("You must specify both tau and p.")
@@ -35,8 +35,8 @@ collapsed_gibbs <- function(data_DTM,
 
   if(verbose==T){vb <- 1; nupd <- round(niter/10)}else{vb <- 0; nupd=0}
 
-  if(dim(data)[2]==2){colnames(data) <- c("Word", "Doc")}
-  if(dim(data)[2]==3){colnames(data) <- c("Word", "Doc", "Init_Topic")}
+  # if(dim(data)[2]==2){colnames(data) <- c("Word", "Doc")}
+  # if(dim(data)[2]==3){colnames(data) <- c("Word", "Doc", "Init_Topic")}
 
   #init.z = NULL
   seed = seed
@@ -45,10 +45,13 @@ collapsed_gibbs <- function(data_DTM,
 
   if(is.null(init.z)){
     set.seed(seed)
-    data$Init_Topic <- as.factor(sample(1:K, nrow(data), T))
+    Init_Topic <- as.factor(sample(1:K, nrow(data), T))
   } else {
-    data$Init_Topic <- as.factor(init.z)
+    Init_Topic <- as.factor(init.z)
   }
+
+  data <- cbind(data, Init_Topic)
+
   if(all.post) {
     keep_index <- seq(1:niter)
   } else {
@@ -70,11 +73,9 @@ collapsed_gibbs <- function(data_DTM,
   }
   if(data_output==T){
 
-    data <- as.data.frame(data)
-    colnames(data) <- c("Word", "Doc", "Init_Topic")
     res <- list.append(res,data=data)
 
   }
-  res <- res[-1]
+
   return(res)
 }
