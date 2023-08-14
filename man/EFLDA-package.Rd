@@ -4,7 +4,7 @@
 \name{EFLDA-package}
 \alias{EFLDA}
 \alias{EFLDA-package}
-\title{EFLDA: EFLDA - The extended flexible latent Dirichlet allocation}
+\title{EFLDA: Extended Flexible Latent Dirichlet Allocation}
 \description{
 Extended Flexible Latent Dirichlet Allocation. A tool useful for topic modelling analyses. Positive correlation between topic allowed.
 }
