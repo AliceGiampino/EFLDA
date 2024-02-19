@@ -6,14 +6,14 @@ using namespace Rcpp;
 
 
 // [[Rcpp::export]]
-Rcpp::List collapsed_lda_cpp(arma::mat data,
-                             arma::colvec alpha,
-                             arma::colvec beta,
+Rcpp::List collapsed_lda_cpp(arma::mat& data,
+                             arma::colvec& alpha,
+                             arma::colvec& beta,
                              int K,
                              int thin,
                              int niter,
                              double warmup,
-                             arma::colvec keep_index,
+                             arma::colvec& keep_index,
                              int verbose,
                              int nupd = 0){
 
@@ -192,16 +192,16 @@ Rcpp::List collapsed_lda_cpp(arma::mat data,
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // [[Rcpp::export]]
-Rcpp::List collapsed_efd_cpp(arma::mat data,
-                             arma::colvec alpha,
-                             arma::colvec beta,
-                             arma::colvec tau,
-                             arma::colvec p,
+Rcpp::List collapsed_efd_cpp(arma::mat& data,
+                             arma::colvec& alpha,
+                             arma::colvec& beta,
+                             arma::colvec& tau,
+                             arma::colvec& p,
                              int K,
                              int thin,
                              int niter,
                              double warmup,
-                             arma::colvec keep_index,
+                             arma::colvec& keep_index,
                              int verbose,
                              int nupd = 0){
 
