@@ -78,7 +78,7 @@ data_list <- (Corpus_alternative(corpus))[,1:2]
 z_init <- list()
 for(d in 1:D){
   
-  z_init[[d]] <- sample(1:K, sum(data_list$Doc=="d"), T)
+  z_init[[d]] <- sample(1:K, sum(data_list$Doc==d), T)
   
 }
 
@@ -139,7 +139,7 @@ lda <- collapsed_gibbs(data_doc_train, K = K,
 flda <- collapsed_gibbs(data_doc_train, K = K,
                         alpha=alpha, beta=beta, tau=tau, p=p,
                         type="EFD", thin=1, niter=niter,
-                        warmup=0.5, seed=42, init.z=z_init,
+                        warmup=0.5, seed=42, init.z=NULL,
                         verbose=T,
                         all.post = F, data_output=T)
 
@@ -163,5 +163,4 @@ perplexity(flda, newdata=data_doc_test))
 
 perplexity(lda, newdata=data_doc_test, posterior_mean=TRUE)
 perplexity(flda, newdata=data_doc_test, posterior_mean=TRUE))
-
 ```

@@ -41,9 +41,12 @@ collapsed_gibbs <- function(data_DTM,
 
   if(is.null(init.z)){
     set.seed(seed)
-    Init_Topic <- as.factor(sample(1:K, nrow(data), T))
-  } else {
-    Init_Topic <- as.factor(init.z)
+    z_init <- list()
+    for(d in 1:D){
+
+      z_init[[d]] <- sample(1:K, sum(data[d,]), T)
+
+    }
   }
 
   if(dim(data)[2]==2){data <- cbind(data, Init_Topic)}
@@ -61,11 +64,12 @@ collapsed_gibbs <- function(data_DTM,
   data <- data.matrix(data)
   if(type=="LDA"){
     res <- collapsed_lda_cpp(data=data, K=K, alpha=alpha, beta=beta,
+                             z_init = z_init,
                              niter=niter, keep_index = keep_index,
                              verbose = vb, nupd = nupd)
   } else if(type=="EFD"){
     res <- collapsed_efd_cpp(data=data, K=K, alpha=alpha, beta=beta, tau=tau, p=p,
-                             niter=niter, keep_index = keep_index,
+                             z_init = z_init, niter=niter, keep_index = keep_index,
                              verbose = vb, nupd = nupd)
   }
   if(data_output==T){
