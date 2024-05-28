@@ -61,11 +61,11 @@ collapsed_gibbs <- function(data_DTM,
   data <- data.matrix(data)
   if(type=="LDA"){
     res <- collapsed_lda_cpp(data=data, K=K, alpha=alpha, beta=beta,
-                             thin=thin, niter=niter, warmup=warmup, keep_index = keep_index,
+                             niter=niter, keep_index = keep_index,
                              verbose = vb, nupd = nupd)
   } else if(type=="EFD"){
     res <- collapsed_efd_cpp(data=data, K=K, alpha=alpha, beta=beta, tau=tau, p=p,
-                             thin=thin, niter=niter, warmup=warmup, keep_index = keep_index,
+                             niter=niter, keep_index = keep_index,
                              verbose = vb, nupd = nupd)
   }
   if(data_output==T){
