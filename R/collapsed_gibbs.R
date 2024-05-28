@@ -49,9 +49,6 @@ collapsed_gibbs <- function(data_DTM,
     }
   }
 
-  if(dim(data)[2]==2){data <- cbind(data, Init_Topic)}
-  if(dim(data)[2]==3){data[,3] <- Init_Topic}
-
   if(all.post) {
     keep_index <- seq(1:niter)
   } else {
