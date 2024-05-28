@@ -127,7 +127,7 @@ data_doc_test <- as.data.frame(table(data_list_test$Doc, data_list_test$Word))
 data_doc_test <- as.matrix(reshape(data_doc_test, idvar = "Var1",
                                    timevar = "Var2", direction = "wide")[,-1])
 
-niter = 10000
+niter = 1000
 
 lda <- collapsed_gibbs(data_doc_train, K = K,
                        alpha=alpha, beta=beta,
@@ -163,4 +163,5 @@ perplexity(flda, newdata=data_doc_test))
 
 perplexity(lda, newdata=data_doc_test, posterior_mean=TRUE)
 perplexity(flda, newdata=data_doc_test, posterior_mean=TRUE))
+
 ```
