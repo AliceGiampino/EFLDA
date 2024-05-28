@@ -16,7 +16,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Alice Giampino \email{a.giampino@campus.unimib.it}
+\strong{Maintainer}: Alice Giampino \email{alice.giampino@unimib.it}
 
 Authors:
 \itemize{

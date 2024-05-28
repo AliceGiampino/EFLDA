@@ -23,7 +23,7 @@ collapsed_gibbs(
 )
 }
 \arguments{
-\item{data_DTM}{data in format DTM, it can be also a matrix with columns Word and Doc, or a data.frame}
+\item{data_DTM}{data in format DTM, it can be also a matrix with columns "Word" and "Doc" or "i" and "j", or a data.frame}
 
 \item{K}{number of topic}
 
@@ -45,7 +45,7 @@ collapsed_gibbs(
 
 \item{seed}{of the analysis}
 
-\item{init.z}{initial values of the topic}
+\item{init.z}{initial values of the topic, it is a list with D elements and each has length Nd}
 
 \item{verbose}{if you want print of the iteration}
 

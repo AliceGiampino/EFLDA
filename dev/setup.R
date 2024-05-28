@@ -6,7 +6,7 @@ usethis::use_description(
   list(
     Title = "Extended Flexible Latent Dirichlet Allocation",
     `Authors@R` = "c(
-    person('Alice', 'Giampino', email = 'a.giampino@campus.unimib.it', role = c('cre', 'aut')),
+    person('Alice', 'Giampino', email = 'alice.giampino@unimib.it', role = c('cre', 'aut')),
     person('Roberto', 'Ascari', email = 'roberto.ascari@unimib.it', role = c('aut')))",
     Description = "Extended Flexible Latent Dirichlet Allocation.
     A tool useful for topic modelling analyses.
@@ -29,7 +29,6 @@ usethis::use_rcpp_armadillo()
 Rcpp::compileAttributes()
 devtools::document()
 # usethis::use_namespace(roxygen = TRUE)
-
 # Tests
 # usethis::use_testthat()
 # usethis::use_test("gd")

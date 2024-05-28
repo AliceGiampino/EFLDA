@@ -1,6 +1,6 @@
 #' Collapsed Gibbs sampling
 #'
-#' @param data_DTM data in format DTM, it can be also a matrix with columns Word and Doc, or a data.frame
+#' @param data_DTM data in format DTM, it can be also a matrix with columns "Word" and "Doc" or "i" and "j", or a data.frame
 #' @param K number of topic
 #' @param alpha parameter of the Dirichlet
 #' @param beta parameter of the Dirichlet
@@ -11,7 +11,7 @@
 #' @param niter number of iteration
 #' @param warmup percentage of the warmup
 #' @param seed of the analysis
-#' @param init.z initial values of the topic
+#' @param init.z initial values of the topic, it is a list with D elements and each has length Nd
 #' @param verbose if you want print of the iteration
 #' @param all.post True if you want all the niter samples from the posterior
 #' @param data_output True if you want the training data in the output
@@ -24,10 +24,9 @@ collapsed_gibbs <- function(data_DTM,
                              thin=1, niter=5000, warmup=0.5, seed=42, init.z=NULL, verbose=T,
                              all.post = F, data_output=F
 ){
-  #if(class(data)[1]!="matrix"& class(data)[1]!="data.frame") data <- DTM_to_matrix(data_DTM)
-  if(class(data_DTM)[1]=="DTM") data <- DTM_to_matrix(data_DTM)
-  if(class(data_DTM)[1]=="data.frame") data <- as.data.frame(data_DTM)
-  if(class(data_DTM)[1]=="matrix") data <- data_DTM
+  # data_DTM is a DTM, it can be also a matrix with columns different words
+  # and rows different documents, the values are the counts of each word in each document
+  data <- transform_data(data_DTM)
 
   if(!(type %in% c("LDA","EFD"))) stop("type must be either LDA or EFD.")
   if(type=="EFD" & (is.null(tau)|is.null(p))) stop("You must specify both tau and p.")
@@ -35,13 +34,10 @@ collapsed_gibbs <- function(data_DTM,
 
   if(verbose==T){vb <- 1; nupd <- round(niter/10)}else{vb <- 0; nupd=0}
 
-  # if(dim(data)[2]==2){colnames(data) <- c("Word", "Doc")}
-  # if(dim(data)[2]==3){colnames(data) <- c("Word", "Doc", "Init_Topic")}
-
-  #init.z = NULL
   seed = seed
-  N = nrow(data_DTM)
-  V = length(unique(data_DTM[,1]))
+  N = sum(data)
+  V = ncol(data)
+  D = nrow(data)
 
   if(is.null(init.z)){
     set.seed(seed)
@@ -74,7 +70,7 @@ collapsed_gibbs <- function(data_DTM,
   }
   if(data_output==T){
 
-    res <- list.append(res,data=data)
+    res <- rlist::list.append(res,data=data)
 
   }
 
