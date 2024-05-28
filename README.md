@@ -4,7 +4,7 @@
 
 <!-- badges: end -->
 
-The goal of EFLDA is to ...
+The goal of EFLDA is to provide a package for topic modelling tecnique exploiting LDA and the Extended Flexible LDA.
 
 ## Installation
 
