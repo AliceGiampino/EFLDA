@@ -157,11 +157,12 @@ perplexity(flda, posterior_mean=TRUE)
 # Perplexity for new data:
 
 perplexity(lda, newdata=data_doc_test)
-perplexity(flda, newdata=data_doc_test))
+perplexity(flda, newdata=data_doc_test)
 
 # Perplexity for new data using the posterior means:
 
 perplexity(lda, newdata=data_doc_test, posterior_mean=TRUE)
-perplexity(flda, newdata=data_doc_test, posterior_mean=TRUE))
+perplexity(flda, newdata=data_doc_test, posterior_mean=TRUE)
 
 ```
+
