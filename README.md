@@ -29,7 +29,7 @@ set.seed(123)
 K <- 3 # Number of Topic
 V <- 10 # Length of vocabulary
 eps <- 1000 # average of words per document; it influences N_d
-D <- 50 # Number of documents
+D <- 25 # Number of documents
 
 beta <- rep(1,V)
 
