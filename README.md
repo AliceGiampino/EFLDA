@@ -148,13 +148,7 @@ flda <- collapsed_gibbs(data_doc_train, K = K,
 # Find the cluster allocation from the FD mixture:
 n_post = dim(flda$theta_post)[3]
 
-cl_alloc = cluster_allocation(theta_post = flda$theta_post,
-                   D=D,
-                   n_post = n_post,
-                   K=K,
-                   alpha=alpha,
-                   tau=tau,
-                   p=p)
+cl_alloc = cluster_allocation(model)
 
 cl_alloc
 
