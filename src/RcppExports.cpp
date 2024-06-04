@@ -22,39 +22,50 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// whichC
-int whichC(NumericVector x, double val);
-RcppExport SEXP _EFLDA_whichC(SEXP xSEXP, SEXP valSEXP) {
+// whichIndex
+int whichIndex(NumericVector x, double val);
+RcppExport SEXP _EFLDA_whichIndex(SEXP xSEXP, SEXP valSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< double >::type val(valSEXP);
-    rcpp_result_gen = Rcpp::wrap(whichC(x, val));
+    rcpp_result_gen = Rcpp::wrap(whichIndex(x, val));
     return rcpp_result_gen;
 END_RCPP
 }
-// oneMultinomC
-IntegerVector oneMultinomC(NumericVector probs);
-RcppExport SEXP _EFLDA_oneMultinomC(SEXP probsSEXP) {
+// whichMax
+int whichMax(arma::colvec vec);
+RcppExport SEXP _EFLDA_whichMax(SEXP vecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::colvec >::type vec(vecSEXP);
+    rcpp_result_gen = Rcpp::wrap(whichMax(vec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// oneSampleMultinom
+IntegerVector oneSampleMultinom(NumericVector probs);
+RcppExport SEXP _EFLDA_oneSampleMultinom(SEXP probsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type probs(probsSEXP);
-    rcpp_result_gen = Rcpp::wrap(oneMultinomC(probs));
+    rcpp_result_gen = Rcpp::wrap(oneSampleMultinom(probs));
     return rcpp_result_gen;
 END_RCPP
 }
-// cmultinom
-int cmultinom(NumericVector probs, int d, int w);
-RcppExport SEXP _EFLDA_cmultinom(SEXP probsSEXP, SEXP dSEXP, SEXP wSEXP) {
+// whichMultinom
+int whichMultinom(NumericVector probs, int d, int w);
+RcppExport SEXP _EFLDA_whichMultinom(SEXP probsSEXP, SEXP dSEXP, SEXP wSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type probs(probsSEXP);
     Rcpp::traits::input_parameter< int >::type d(dSEXP);
     Rcpp::traits::input_parameter< int >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(cmultinom(probs, d, w));
+    rcpp_result_gen = Rcpp::wrap(whichMultinom(probs, d, w));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -67,6 +78,37 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type value(valueSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type vec(vecSEXP);
     rcpp_result_gen = Rcpp::wrap(isInVector(value, vec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fDir
+double fDir(arma::colvec x, arma::colvec alpha, arma::colvec tau, int position);
+RcppExport SEXP _EFLDA_fDir(SEXP xSEXP, SEXP alphaSEXP, SEXP tauSEXP, SEXP positionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::colvec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::colvec >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< arma::colvec >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< int >::type position(positionSEXP);
+    rcpp_result_gen = Rcpp::wrap(fDir(x, alpha, tau, position));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cluster_allocation
+arma::mat cluster_allocation(arma::cube theta_post, int D, int n_post, int K, arma::colvec alpha, arma::colvec tau, arma::colvec p);
+RcppExport SEXP _EFLDA_cluster_allocation(SEXP theta_postSEXP, SEXP DSEXP, SEXP n_postSEXP, SEXP KSEXP, SEXP alphaSEXP, SEXP tauSEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::cube >::type theta_post(theta_postSEXP);
+    Rcpp::traits::input_parameter< int >::type D(DSEXP);
+    Rcpp::traits::input_parameter< int >::type n_post(n_postSEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    Rcpp::traits::input_parameter< arma::colvec >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< arma::colvec >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< arma::colvec >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(cluster_allocation(theta_post, D, n_post, K, alpha, tau, p));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -155,10 +197,13 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_EFLDA_whichOne", (DL_FUNC) &_EFLDA_whichOne, 1},
-    {"_EFLDA_whichC", (DL_FUNC) &_EFLDA_whichC, 2},
-    {"_EFLDA_oneMultinomC", (DL_FUNC) &_EFLDA_oneMultinomC, 1},
-    {"_EFLDA_cmultinom", (DL_FUNC) &_EFLDA_cmultinom, 3},
+    {"_EFLDA_whichIndex", (DL_FUNC) &_EFLDA_whichIndex, 2},
+    {"_EFLDA_whichMax", (DL_FUNC) &_EFLDA_whichMax, 1},
+    {"_EFLDA_oneSampleMultinom", (DL_FUNC) &_EFLDA_oneSampleMultinom, 1},
+    {"_EFLDA_whichMultinom", (DL_FUNC) &_EFLDA_whichMultinom, 3},
     {"_EFLDA_isInVector", (DL_FUNC) &_EFLDA_isInVector, 2},
+    {"_EFLDA_fDir", (DL_FUNC) &_EFLDA_fDir, 4},
+    {"_EFLDA_cluster_allocation", (DL_FUNC) &_EFLDA_cluster_allocation, 7},
     {"_EFLDA_collapsed_lda_cpp", (DL_FUNC) &_EFLDA_collapsed_lda_cpp, 9},
     {"_EFLDA_collapsed_efd_cpp", (DL_FUNC) &_EFLDA_collapsed_efd_cpp, 11},
     {"_EFLDA_collapsed_lda_cpp_pred", (DL_FUNC) &_EFLDA_collapsed_lda_cpp_pred, 10},

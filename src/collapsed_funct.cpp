@@ -8,8 +8,7 @@ using namespace Rcpp;
 
 // whichOne
 //
-// Gives the index of the element in an IntegerVector 'x' equal to 1.
-// Note - the vector is zero-based in C++.
+// Gives the index of the element equal to 1.
 // [[Rcpp::export]]
 int whichOne(IntegerVector x) {
   int index = -1;
@@ -19,18 +18,22 @@ int whichOne(IntegerVector x) {
       if (index == -1) {
         index = i;
       } else {
-        Rcpp::Rcout << "There's more than one 1. Check multinom functions." << std::endl;
+        Rcpp::Rcout << "There is more than one value equal to 1 in the vector." << std::endl;
       }
     }
   }
 
-  // If The Element Appears, return the index.
-  if (index == -1) { Rcpp::Rcout << "error: There is no corresponding element. Vector is " << x << std::endl;}
+  // If the element does not apper:
+  if (index == -1) { Rcpp::Rcout << "Error: There is no corresponding element. Vector is " << x << std::endl;}
+  // if the element appears return the index:
   return index;
 }
 
+// whichIndex
+//
+// Gives the index of the element if present in the vector.
 // [[Rcpp::export]]
-int whichC(NumericVector x, double val) {
+int whichIndex(NumericVector x, double val) {
   int index = -1;
   int n = x.size();
 
@@ -39,40 +42,58 @@ int whichC(NumericVector x, double val) {
       if (index == -1) {
         index = i;
       } else {
-        Rcpp::Rcout << "The value appears multiple times!" << std::endl;
+        Rcpp::Rcout << "Error: The value appears multiple times." << std::endl;
       }
     }
   }
 
   // If the element appears, return the index.
-  if (index == -1) { Rcpp::Rcout << "The value does not appear in this vector!" << std::endl;}
+  if (index == -1) { Rcpp::Rcout << "Error: The value does not appear in this vector." << std::endl;}
   return index;
 }
 
-// oneMultinomcC
+// whichMax
+//
+// Gives the index of the max element of the vector, correspond to which.max() in R
+// [[Rcpp::export]]
+int whichMax(arma::colvec vec){
+
+  int K = vec.size();
+  double max_val = vec[0];
+  int max_ind = 0;
+
+  for(int i = 0; i < K; i++){
+    if(vec[i] > max_val) {
+      max_val = vec[i];
+      max_ind = i;
+    }
+  }
+
+  return (max_ind + 1); // Adding 1 to convert from 0-based to 1-based indexing
+}
+
+// oneSampleMultinom
 //
 // Samples a single vector from a single draw of the Multinomial
-// distribution with parameters specified by 'probs'.
+// distribution with parameters specified by probabilities.
 
 // [[Rcpp::export]]
-IntegerVector oneMultinomC(NumericVector probs) {
-  int k = probs.size();
-  IntegerVector ans(k);
-  rmultinom(1, probs.begin(), k, ans.begin());
+IntegerVector oneSampleMultinom(NumericVector probs) {
+  int K = probs.size();
+  IntegerVector ans(K);
+  rmultinom(1, probs.begin(), K, ans.begin());
   return(ans);
 }
 
 
-// cmultinom
+// whichMultinom
 //
 // Returns the index of the sampled multinomial vector which is 1.
-// Note - this is zero-indexed.
-
 // [[Rcpp::export]]
-int cmultinom(NumericVector probs, int d = 0, int w = 0) {
+int whichMultinom(NumericVector probs, int d = 0, int w = 0) {
   int K = probs.size();
   int out = -1;
-  IntegerVector vec = oneMultinomC(probs);
+  IntegerVector vec = oneSampleMultinom(probs);
   out = whichOne(vec);
   if (out == -1) {
     Rcpp::Rcout << "Error: Internal error. "
@@ -99,6 +120,73 @@ bool isInVector(int value, NumericVector vec) {
   }
   return false;
 }
+
+// Function to calculate the density of a Dirichlet distribution
+// for a given value x and parameter alpha and tau
+// [[Rcpp::export]]
+double fDir(arma::colvec x, arma::colvec alpha, arma::colvec tau, int position) {
+
+  // Extract dimension of the Dirichlet distribution
+  int K = x.size();
+
+  arma::colvec base(K); // Initialize vector with zeros
+  base[position-1] = 1.0; // Set value at position 'position' to 1
+  arma::colvec tau_k(K);
+
+  for(int k=0; k<K; k++){
+    tau_k[k] = tau[k]*base[k];
+  }
+  // Calculate the density of the Dirichlet distribution
+  double density = lgamma(arma::sum(alpha+tau_k)) - arma::sum(lgamma(alpha+tau_k));
+
+  double somma = 0.0;
+
+  for(int k=0; k<K; k++){
+
+    somma = somma+ (alpha[k]+tau_k[k]-1)*log(x[k]);
+  }
+  density = density+somma;
+  return density;
+}
+
+// [[Rcpp::export]]
+arma::mat cluster_allocation(arma::cube theta_post,
+                             int D,
+                             int n_post,
+                             int K,
+                             arma::colvec alpha,
+                             arma::colvec tau,
+                             arma::colvec p){
+
+  // cluster allocation:
+  arma::mat cl_alloc(n_post, D);
+
+  for(int j = 0; j < n_post; j++){
+
+    arma::mat theta_post_mat = theta_post.slice(j); // DxK
+
+    for(int d = 0; d < D; d++){
+
+      arma::colvec l_q(K);
+      arma::rowvec theta_row_d = theta_post_mat.row(d);
+      arma::colvec theta_col_d = theta_row_d.t();
+
+      for(int k = 0; k < K; k++){
+
+        l_q[k] = log(p[k]) + fDir(theta_col_d, alpha, tau, k+1);
+
+      } // close k
+      int max_ind = whichMax(l_q);
+
+      cl_alloc(j, d) = max_ind; // Transpose the indices
+    } // close d
+
+  } // close j
+
+  return cl_alloc;
+
+}
+
 
 // [[Rcpp::export]]
 Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
@@ -239,8 +327,8 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
               full_cond[k] = full_cond[k] / sum;
             }
 
-            // Receive a zero-indexed topic from cmultinom
-            topic = cmultinom(full_cond, d, w);
+            // Receive a zero-indexed topic from whichMultinom
+            topic = whichMultinom(full_cond, d, w);
             // Add 1 to it to reindex in 1-k the topic
             z_d[i] = topic+1;
 
@@ -256,7 +344,7 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
 
         if (isInVector(iter+1, keep_index)) {
 
-          int j = whichC(keep_index, iter+1);
+          int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
             phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta(w));
@@ -276,11 +364,13 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
 
       if (isInVector(iter+1, keep_index)) {
 
-        int j = whichC(keep_index, iter+1);
+        int j = whichIndex(keep_index, iter+1);
 
         for(int k=0; k<K; k++){
           theta_post(d,k,j) = (n_d_k(d,k) + alpha(k))/accu(n_d_k.row(d)+alpha(k));
+
         }
+
 
       } // close keep index
 
@@ -300,7 +390,7 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
     for(int iter=0; iter<niter; iter++){
       if (isInVector(iter+1, keep_index)) {
 
-        int j = whichC(keep_index, iter+1);
+        int j = whichIndex(keep_index, iter+1);
         int count = 0;
 
         float sub_tot = 0.0;
@@ -513,8 +603,8 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
             arma::colvec sumlog = log(t1) + log_t_long;
 
             full_cond = exp(log(t1) + log_t_long - (log(sum(exp(sumlog - max(sumlog)))) + max(sumlog)));
-            // Receive a zero-indexed topic from cmultinom
-            topic = cmultinom(full_cond, d, w);
+            // Receive a zero-indexed topic from whichMultinom
+            topic = whichMultinom(full_cond, d, w);
             // Add 1 to it to reindex in 1-k the topic
             z_d[i] = topic+1;
 
@@ -530,7 +620,7 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
 
         if (isInVector(iter+1, keep_index)) {
 
-          int j = whichC(keep_index, iter+1);
+          int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
             phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta(w));
@@ -546,7 +636,7 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
 
       if (isInVector(iter+1, keep_index)) {
 
-        int j = whichC(keep_index, iter+1);
+        int j = whichIndex(keep_index, iter+1);
 
         arma::colvec rowdp = arma::conv_to<arma::colvec>::from(n_d_k.row(d));
         Bpost.col(0) = alpha+tau+rowdp;
@@ -564,6 +654,7 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
           double one = (n_d_k(d,k) + alpha(k))*accu(p_starxp/(accu(rowdp + alpha)+tau));
           double two = tau(k)*(p_starxp(k)/(accu(rowdp + alpha)+tau(k)));
           theta_post(d,k,j) = one+two;
+
         }
 
       } // close keep index
@@ -573,10 +664,6 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
       if((iter+1)==niter){
         z_post[d] = z_d;
       }
-
-      //if((iter+1)==(niter-1)){
-      //  z_post_m1[d] = z_d;
-      //}
 
     } // close document for
 
@@ -592,7 +679,7 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
     for(int iter=0; iter<niter; iter++){
       if (isInVector(iter+1, keep_index)) {
 
-        int j = whichC(keep_index, iter+1);
+        int j = whichIndex(keep_index, iter+1);
         int count = 0;
 
         float sub_tot = 0.0;
@@ -788,8 +875,8 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
               full_cond[k] = full_cond[k] / sum;
             }
 
-            // Receive a zero-indexed topic from cmultinom
-            topic = cmultinom(full_cond, d, w);
+            // Receive a zero-indexed topic from whichMultinom
+            topic = whichMultinom(full_cond, d, w);
             // Add 1 to it to reindex in 1-k the topic
             z_d[i] = topic+1;
 
@@ -805,7 +892,7 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
 
         if (isInVector(iter+1, keep_index)) {
 
-          int j = whichC(keep_index, iter+1);
+          int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
             phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta(w));
@@ -821,7 +908,7 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
 
       if (isInVector(iter+1, keep_index)) {
 
-        int j = whichC(keep_index, iter+1);
+        int j = whichIndex(keep_index, iter+1);
 
         for(int k=0; k<K; k++){
           theta_post(d,k,j) = (n_d_k(d,k) + alpha(k))/accu(n_d_k.row(d)+alpha(k));
@@ -848,7 +935,7 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
     for(int iter=0; iter<niter; iter++){
       if (isInVector(iter+1, keep_index)) {
 
-        int j = whichC(keep_index, iter+1);
+        int j = whichIndex(keep_index, iter+1);
         int count = 0;
 
         float sub_tot = 0.0;
@@ -1070,8 +1157,8 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
             arma::colvec sumlog = log(t1) + log_t_long;
 
             full_cond = exp(log(t1) + log_t_long - (log(sum(exp(sumlog - max(sumlog)))) + max(sumlog)));
-            // Receive a zero-indexed topic from cmultinom
-            topic = cmultinom(full_cond, d, w);
+            // Receive a zero-indexed topic from whichMultinom
+            topic = whichMultinom(full_cond, d, w);
             // Add 1 to it to reindex in 1-k the topic
             z_d[i] = topic+1;
 
@@ -1087,7 +1174,7 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
 
         if (isInVector(iter+1, keep_index)) {
 
-          int j = whichC(keep_index, iter+1);
+          int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
             phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta(w));
@@ -1103,7 +1190,7 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
 
       if (isInVector(iter+1, keep_index)) {
 
-        int j = whichC(keep_index, iter+1);
+        int j = whichIndex(keep_index, iter+1);
 
         arma::colvec rowdp = arma::conv_to<arma::colvec>::from(n_d_k.row(d));
         Bpost.col(0) = alpha+tau+rowdp;
@@ -1121,6 +1208,7 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
           double one = (n_d_k(d,k) + alpha(k))*accu(p_starxp/(accu(rowdp + alpha)+tau));
           double two = tau(k)*(p_starxp(k)/(accu(rowdp + alpha)+tau(k)));
           theta_post(d,k,j) = one+two;
+
         }
 
       } // close keep index
@@ -1148,7 +1236,7 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
     for(int iter=0; iter<niter; iter++){
       if (isInVector(iter+1, keep_index)) {
 
-        int j = whichC(keep_index, iter+1);
+        int j = whichIndex(keep_index, iter+1);
         int count = 0;
 
         float sub_tot = 0.0;

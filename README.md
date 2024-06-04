@@ -164,5 +164,57 @@ perplexity(flda, newdata=data_doc_test)
 perplexity(lda, newdata=data_doc_test, posterior_mean=TRUE)
 perplexity(flda, newdata=data_doc_test, posterior_mean=TRUE)
 
+
+# Find the cluster allocation from the FD mixture:
+n_post = dim(flda$theta_post)[3]
+
+cl_alloc = cluster_allocation(theta_post = flda$theta_post,
+                   D=D,
+                   n_post = n_post,
+                   K=K,
+                   alpha=alpha,
+                   tau=tau,
+                   p=p)
+
+cl_alloc
+
+cl_allocation <- as.numeric(apply(cl_alloc, 2, function(x) names(which.max(table(x)))))
+
+cbind(Document = 1:D, Cluster = cl_allocation, alloc_real = alloc_real)
+
+table(cl_allocation, alloc_real)
+
+# calculate the optimal permutation for label switching:
+library(combinat)
+# # optional code for L_p distances
+#set p
+p_norm = 2
+
+perms = permn(1:K)
+L_p_vec = rep(0,length(perms))
+
+theta_mean_post <- as.data.frame(apply(flda$theta_post, c(1,2) , mean))
+
+for(i in 1:length(perms)){
+
+  L_p = 0
+  for(k in 1:K){
+    L_p = L_p + sum((theta_d[,k] - theta_mean_post[,perms[[i]][k]])^p_norm)
+  }
+  L_p_vec[i] = L_p^(1/p_norm)
+}
+#find the permutaiton which minimizes label switching
+perm = perms[[which(L_p_vec == min(L_p_vec))]]
+
+table(cl_allocation, alloc_real)
+
+# Create a mapping between original labels and new labels
+mapping <- setNames(perm, unique(cl_allocation))
+
+# Apply the mapping to relabel cl_allocation
+relabeled_cl_allocation <- mapping[as.character(cl_allocation)]
+
+table(relabeled_cl_allocation, alloc_real)
+
 ```
 

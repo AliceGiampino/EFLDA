@@ -5,20 +5,32 @@ whichOne <- function(x) {
     .Call(`_EFLDA_whichOne`, x)
 }
 
-whichC <- function(x, val) {
-    .Call(`_EFLDA_whichC`, x, val)
+whichIndex <- function(x, val) {
+    .Call(`_EFLDA_whichIndex`, x, val)
 }
 
-oneMultinomC <- function(probs) {
-    .Call(`_EFLDA_oneMultinomC`, probs)
+whichMax <- function(vec) {
+    .Call(`_EFLDA_whichMax`, vec)
 }
 
-cmultinom <- function(probs, d = 0L, w = 0L) {
-    .Call(`_EFLDA_cmultinom`, probs, d, w)
+oneSampleMultinom <- function(probs) {
+    .Call(`_EFLDA_oneSampleMultinom`, probs)
+}
+
+whichMultinom <- function(probs, d = 0L, w = 0L) {
+    .Call(`_EFLDA_whichMultinom`, probs, d, w)
 }
 
 isInVector <- function(value, vec) {
     .Call(`_EFLDA_isInVector`, value, vec)
+}
+
+fDir <- function(x, alpha, tau, position) {
+    .Call(`_EFLDA_fDir`, x, alpha, tau, position)
+}
+
+cluster_allocation <- function(theta_post, D, n_post, K, alpha, tau, p) {
+    .Call(`_EFLDA_cluster_allocation`, theta_post, D, n_post, K, alpha, tau, p)
 }
 
 collapsed_lda_cpp <- function(data, alpha, beta, K, niter, keep_index, z_init, verbose, nupd = 0L) {
