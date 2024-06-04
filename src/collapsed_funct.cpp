@@ -150,7 +150,7 @@ double fDir(arma::colvec x, arma::colvec alpha, arma::colvec tau, int position) 
 }
 
 // [[Rcpp::export]]
-arma::mat cluster_allocation(arma::cube theta_post,
+arma::mat cluster_allocation_cpp(arma::cube theta_post,
                              int D,
                              int n_post,
                              int K,

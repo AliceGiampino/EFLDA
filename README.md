@@ -28,7 +28,7 @@ library(EFLDA)
 set.seed(123)
 K <- 3 # Number of Topic
 V <- 10 # Length of vocabulary
-eps <- 1000 # average of words per document; it influences N_d
+eps <- 5000 # average of words per document; it influences N_d
 D <- 25 # Number of documents
 
 beta <- rep(1,V)
@@ -146,11 +146,8 @@ flda <- collapsed_gibbs(data_doc_train, K = K,
                         
                         
 # Find the cluster allocation from the FD mixture:
-n_post = dim(flda$theta_post)[3]
 
-cl_alloc = cluster_allocation(model)
-
-cl_alloc
+cl_alloc = cluster_allocation(flda)
 
 cl_allocation <- as.numeric(apply(cl_alloc, 2, function(x) names(which.max(table(x)))))
 

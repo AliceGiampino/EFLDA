@@ -29,8 +29,8 @@ fDir <- function(x, alpha, tau, position) {
     .Call(`_EFLDA_fDir`, x, alpha, tau, position)
 }
 
-cluster_allocation <- function(theta_post, D, n_post, K, alpha, tau, p) {
-    .Call(`_EFLDA_cluster_allocation`, theta_post, D, n_post, K, alpha, tau, p)
+cluster_allocation_cpp <- function(theta_post, D, n_post, K, alpha, tau, p) {
+    .Call(`_EFLDA_cluster_allocation_cpp`, theta_post, D, n_post, K, alpha, tau, p)
 }
 
 collapsed_lda_cpp <- function(data, alpha, beta, K, niter, keep_index, z_init, verbose, nupd = 0L) {

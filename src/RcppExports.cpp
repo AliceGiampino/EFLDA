@@ -95,9 +95,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cluster_allocation
-arma::mat cluster_allocation(arma::cube theta_post, int D, int n_post, int K, arma::colvec alpha, arma::colvec tau, arma::colvec p);
-RcppExport SEXP _EFLDA_cluster_allocation(SEXP theta_postSEXP, SEXP DSEXP, SEXP n_postSEXP, SEXP KSEXP, SEXP alphaSEXP, SEXP tauSEXP, SEXP pSEXP) {
+// cluster_allocation_cpp
+arma::mat cluster_allocation_cpp(arma::cube theta_post, int D, int n_post, int K, arma::colvec alpha, arma::colvec tau, arma::colvec p);
+RcppExport SEXP _EFLDA_cluster_allocation_cpp(SEXP theta_postSEXP, SEXP DSEXP, SEXP n_postSEXP, SEXP KSEXP, SEXP alphaSEXP, SEXP tauSEXP, SEXP pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -108,7 +108,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::colvec >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< arma::colvec >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< arma::colvec >::type p(pSEXP);
-    rcpp_result_gen = Rcpp::wrap(cluster_allocation(theta_post, D, n_post, K, alpha, tau, p));
+    rcpp_result_gen = Rcpp::wrap(cluster_allocation_cpp(theta_post, D, n_post, K, alpha, tau, p));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -203,7 +203,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_EFLDA_whichMultinom", (DL_FUNC) &_EFLDA_whichMultinom, 3},
     {"_EFLDA_isInVector", (DL_FUNC) &_EFLDA_isInVector, 2},
     {"_EFLDA_fDir", (DL_FUNC) &_EFLDA_fDir, 4},
-    {"_EFLDA_cluster_allocation", (DL_FUNC) &_EFLDA_cluster_allocation, 7},
+    {"_EFLDA_cluster_allocation_cpp", (DL_FUNC) &_EFLDA_cluster_allocation_cpp, 7},
     {"_EFLDA_collapsed_lda_cpp", (DL_FUNC) &_EFLDA_collapsed_lda_cpp, 9},
     {"_EFLDA_collapsed_efd_cpp", (DL_FUNC) &_EFLDA_collapsed_efd_cpp, 11},
     {"_EFLDA_collapsed_lda_cpp_pred", (DL_FUNC) &_EFLDA_collapsed_lda_cpp_pred, 10},

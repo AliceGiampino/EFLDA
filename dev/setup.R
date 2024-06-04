@@ -17,7 +17,7 @@ usethis::use_description(
 usethis::use_lgpl_license()       # You can set another license here
 usethis::use_tidy_description()   # sort fields and packages
 
-usethis::use_readme_md( open = FALSE )
+# usethis::use_readme_md( open = FALSE )
 
 usethis::use_package("LearnBayes")
 usethis::use_package("MASS")
