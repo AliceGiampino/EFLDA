@@ -6,7 +6,7 @@
 #' @export
 cluster_allocation <- function(model){
 
-  if(model$type == "LDA"){stop("It can be calculated only with EFD prior.")}
+  if(model$type_model == "LDA"){stop("It can be calculated only with EFD prior.")}
 
   theta_post <- model$theta_post
   D <- dim(theta_post)[1]
