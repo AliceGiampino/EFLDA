@@ -27,6 +27,7 @@ perplexity <- function(model, newdata=NULL, posterior_mean = FALSE){
       loglik <- c()
 
       D <- nrow(theta_post_mean)
+      K <- ncol(theta_post_mean)
 
       for(d in 1:D){
 
