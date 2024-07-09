@@ -27,7 +27,7 @@ perplexity <- function(model, newdata=NULL, posterior_mean = FALSE){
       loglik <- c()
 
       D <- nrow(theta_post_mean)
-      K <- ncol(theta_post_mean)
+      K = ncol(theta_post_mean)
 
       for(d in 1:D){
 
@@ -76,7 +76,7 @@ perplexity <- function(model, newdata=NULL, posterior_mean = FALSE){
 
     }
 
-    K <- ncol(phi_post_mean)
+    K = ncol(phi_post_mean)
 
     niter <- model$niter
     keep_index <- model$keep_index
@@ -87,7 +87,7 @@ perplexity <- function(model, newdata=NULL, posterior_mean = FALSE){
     method <- model$type_model
 
     if(method=="LDA"){
-
+      K = ncol(phi_post_mean)
       model <- collapsed_lda_cpp_pred(newdata,
                                       phi_post_mean = as.matrix(phi_post_mean),
                                       alpha=alpha,
@@ -105,6 +105,7 @@ perplexity <- function(model, newdata=NULL, posterior_mean = FALSE){
 
       tau = model$tau
       p = model$p
+      K = ncol(phi_post_mean)
 
       model <- collapsed_efd_cpp_pred(newdata,
                                         phi_post_mean = as.matrix(phi_post_mean),
@@ -128,7 +129,7 @@ perplexity <- function(model, newdata=NULL, posterior_mean = FALSE){
 
       # use posterior mean for phi and theta:
       theta_post_mean <- as.data.frame(apply(model$theta_post, c(1,2) , mean))
-
+      K = ncol(theta_post_mean)
       loglik <- c()
 
       D <- nrow(theta_post_mean)
