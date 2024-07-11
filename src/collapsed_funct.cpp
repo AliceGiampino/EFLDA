@@ -534,6 +534,10 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
 
   Rcpp::List z_init_up = clone(z_init);
 
+  arma::cube ndk_mat(D,K,niter);
+  arma::cube nkw_mat(K,V,niter);
+  arma::cube nk_mat(K,1,niter);
+
   // Gibbs
   for(int iter=0; iter<niter; iter++){
 
@@ -667,6 +671,10 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
 
     } // close document for
 
+    ndk_mat.slice(iter) = n_d_k;
+    nkw_mat.slice(iter) = n_k_w;
+    nk_mat.slice(iter) = n_k;
+
   } // close iter for
 
   // loglikelihood:
@@ -726,6 +734,9 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
                             Rcpp::Named("beta")=beta,
                             Rcpp::Named("tau")=tau,
                             Rcpp::Named("p")=p,
+                            Rcpp::Named("n_d_k")=ndk_mat,
+                            Rcpp::Named("n_k_w")=nkw_mat,
+                            Rcpp::Named("n_k")=nk_mat,
                             Rcpp::Named("niter")=niter,
                             Rcpp::Named("keep_index")=keep_index,
                             Rcpp::Named("type_model")="EFLDA");
@@ -1087,7 +1098,9 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
   }
 
   Rcpp::List z_init_up = clone(z_init);
-
+  arma::cube ndk_mat(D,K,niter);
+  arma::cube nkw_mat(K,V,niter);
+  arma::cube nk_mat(K,1,niter);
   // Gibbs
   for(int iter=0; iter<niter; iter++){
 
@@ -1220,7 +1233,9 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
       }
 
     } // close document for
-
+    ndk_mat.slice(iter) = n_d_k;
+    nkw_mat.slice(iter) = n_k_w;
+    nk_mat.slice(iter) = n_k;
   } // close iter for
 
 
@@ -1291,6 +1306,9 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
                             Rcpp::Named("beta")=beta,
                             Rcpp::Named("tau")=tau,
                             Rcpp::Named("p")=p,
+                            Rcpp::Named("n_d_k")=ndk_mat,
+                            Rcpp::Named("n_k_w")=nkw_mat,
+                            Rcpp::Named("n_k")=nk_mat,
                             Rcpp::Named("niter")=niter,
                             Rcpp::Named("keep_index")=keep_index,
                             Rcpp::Named("type_model")="EFLDA");
