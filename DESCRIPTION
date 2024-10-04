@@ -22,4 +22,5 @@ Imports:
     stringr,
     tm
 LinkingTo: 
-    Rcpp, RcppArmadillo
+    Rcpp,
+    RcppArmadillo
