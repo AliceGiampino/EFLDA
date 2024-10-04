@@ -473,6 +473,20 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
   arma::cube phi_post(V,K,n_post);
   arma::cube theta_post(D,K,n_post);
 
+  // The full conditional distributions are formed by different elements:
+  // let A be the matrix containing all the elements of the formula containing
+  // alpha and alpha plus the other quantities.
+  // let B be the matrix containing all the elements of the formula containing
+  // alpha and the d-the row plus the other quantities.
+  // Agamma and Cgamma are the corresponding matrices with the log gamma operator applied.
+  // The final form of the full conditional is composed by:
+  // 1) t1: quantities depending on counts and the hyperparameters
+  // 2) t2: composed by p_star_h and p_star_k
+  // NB: p_star_h correspond to p_star_ah in the main paper
+  //     p_star_k correspond to p_star_ak in the main paper
+  //     denom is the normalizing constant
+  //     term_log, sumlog and term_tau are component of the main terms t1 and t2.
+
   arma::mat A(K,3);
   double aplus = accu(alpha);
 
@@ -483,23 +497,23 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
   arma::mat Agamma = lgamma(A);
   arma::colvec logp = log(p);
 
-  arma::mat B(K,3);
-  arma::colvec log_t_long(K);
-  arma::colvec logsum(2);
+  arma::mat C(K,3);
+  arma::colvec log_t2(K);
+  arma::colvec log_p_star(2);
   arma::colvec t1(K);
 
-  arma::mat Bpost(K, 3);
+  arma::mat Cpost(K, 3);
   arma::colvec p_star(K);
 
   double bplus = accu(beta);
 
   // COUNT MATRICES INITIALIZATION:
   // number of words assigned to topic k (col) in document d (row)
-  arma::mat n_d_k(D, K);
+  arma::mat c_d_k(D, K);
   // number of times word w is assigned to topic k
-  arma::mat n_k_w(K, V);
+  arma::mat c_k_w(K, V);
   // total number of times any word is assigned to topic k
-  arma::colvec n_k(K);
+  arma::colvec c_k(K);
 
   for(int d=0; d<D; d++){
 
@@ -518,9 +532,9 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
           // i-th element of z_d
           initZ = z_d(i);
 
-          n_d_k(d, (initZ - 1) ) += 1;
-          n_k_w((initZ - 1),w) += 1;
-          n_k((initZ - 1)) += 1;
+          c_d_k(d, (initZ - 1) ) += 1;
+          c_k_w((initZ - 1),w) += 1;
+          c_k((initZ - 1)) += 1;
 
         }
         count += ndw;
@@ -538,9 +552,9 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
 
   Rcpp::List z_init_up = clone(z_init);
 
-  arma::cube ndk_mat(D,K,niter);
-  arma::cube nkw_mat(K,V,niter);
-  arma::cube nk_mat(K,1,niter);
+  arma::cube cdk_mat(D,K,niter);
+  arma::cube ckw_mat(K,V,niter);
+  arma::cube ck_mat(K,1,niter);
 
   // Gibbs
   for(int iter=0; iter<niter; iter++){
@@ -575,63 +589,68 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
             // Decrease:
             // topic are indexed 1-k
             // This means that we will have to re-index from 0-(k-1)
-            n_d_k(d, topic) -= 1;
-            n_k_w(topic, w) -= 1;
-            n_k(topic) -= 1;
+            c_d_k(d, topic) -= 1;
+            c_k_w(topic, w) -= 1;
+            c_k(topic) -= 1;
 
             NumericVector full_cond(K);
-            arma::colvec rowd = arma::conv_to<arma::colvec>::from(n_d_k.row(d));
-            B.col(0) = alpha+tau+rowd;
-            B.col(1) = alpha+rowd;
-            B.col(2) = aplus+tau+1+accu(rowd);
+            arma::colvec rowd = arma::conv_to<arma::colvec>::from(c_d_k.row(d));
+            C.col(0) = alpha+tau+rowd;
+            C.col(1) = alpha+rowd;
+            C.col(2) = aplus+tau+1+accu(rowd);
 
-            arma::mat Bgamma = lgamma(B);
+            arma::mat Cgamma = lgamma(C);
 
-            arma::colvec fact_log_temp = logp+Agamma.col(0)-Agamma.col(1)+Agamma.col(2)+Bgamma.col(0)-Bgamma.col(1)-Bgamma.col(2);
+            arma::colvec term_log = logp+Agamma.col(0)-Agamma.col(1)+Agamma.col(2)+Cgamma.col(0)-Cgamma.col(1)-Cgamma.col(2);
 
             arma::colvec term_tau = (tau/(alpha+rowd));
 
             for(int k=0; k<K; k++){
-              t1(k) = ((n_d_k(d,k)+alpha(k))*(n_k_w(k,w) + beta(w))/(n_k(k)+bplus));
+              t1(k) = ((c_d_k(d,k)+alpha(k))*(c_k_w(k,w) + beta(w))/(c_k(k)+bplus));
             }
 
-            double logfact = log(sum(exp(fact_log_temp - max(fact_log_temp)))) + max(fact_log_temp);
+            double log_p_star_h = log(sum(exp(term_log - max(term_log)))) + max(term_log);
 
-            logsum(0) = logfact;
+            log_p_star(0) = log_p_star_h;
 
             for(int k=0; k<K; k++){
 
-              double second = fact_log_temp(k) + log(term_tau(k));
+              double log_p_star_k = term_log(k) + log(term_tau(k));
 
-              logsum(1) = second;
+              log_p_star(1) = log_p_star_k;
 
-              log_t_long(k) = log(sum(exp(logsum - max(logsum)))) + max(logsum);
+              log_t2(k) = log(sum(exp(log_p_star - max(log_p_star)))) + max(log_p_star);
             }
 
-            arma::colvec sumlog = log(t1) + log_t_long;
+            arma::colvec sumlog = log(t1) + log_t2;
+            double denom = sum(exp(sumlog - max(sumlog)));
 
-            full_cond = exp(log(t1) + log_t_long - (log(sum(exp(sumlog - max(sumlog)))) + max(sumlog)));
+            full_cond = exp(log(t1) + log_t2 - (log(denom) + max(sumlog)));
+
+            Rcpp::Rcout << full_cond << std::endl;
+
             // Receive a zero-indexed topic from whichMultinom
             topic = whichMultinom(full_cond, d, w);
             // Add 1 to it to reindex in 1-k the topic
             z_d[i] = topic+1;
 
             // Increase:
-            n_d_k(d, topic)  += 1;
-            n_k_w(topic, w)  += 1;
-            n_k(topic) += 1;
+            c_d_k(d, topic)  += 1;
+            c_k_w(topic, w)  += 1;
+            c_k(topic) += 1;
           } // close ndw for
 
           count += ndw;
 
         } // close data(d,w) > 0
-
         if (isInVector(iter+1, keep_index)) {
 
           int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
-            phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta);
+            arma::colvec rowk = arma::conv_to<arma::colvec>::from(c_k_w.row(k));
+            phi_post(w,k,j) = (c_k_w(k,w) + beta(w))/accu(rowk+beta);
+
           }
 
         } // close keep index
@@ -646,20 +665,20 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
 
         int j = whichIndex(keep_index, iter+1);
 
-        arma::colvec rowdp = arma::conv_to<arma::colvec>::from(n_d_k.row(d));
-        Bpost.col(0) = alpha+tau+rowdp;
-        Bpost.col(1) = alpha+rowdp;
-        Bpost.col(2) = aplus+tau+1+accu(rowdp);
+        arma::colvec rowdp = arma::conv_to<arma::colvec>::from(c_d_k.row(d));
+        Cpost.col(0) = alpha+tau+rowdp;
+        Cpost.col(1) = alpha+rowdp;
+        Cpost.col(2) = aplus+tau+1+accu(rowdp);
 
-        arma::mat BgammaP = lgamma(Bpost);
+        arma::mat CgammaP = lgamma(Cpost);
 
-        p_star = logp+Agamma.col(0)+BgammaP.col(0)+Agamma.col(2)-BgammaP.col(1)-Agamma.col(1)-BgammaP.col(2);
+        p_star = logp+Agamma.col(0)+CgammaP.col(0)+Agamma.col(2)-CgammaP.col(1)-Agamma.col(1)-CgammaP.col(2);
         double ppp = log(sum(exp(p_star - max(p_star)))) + max(p_star);
         arma::colvec p_starxp = exp(p_star - ppp);
 
         for(int k=0; k<K; k++){
 
-          double one = (n_d_k(d,k) + alpha(k))*accu(p_starxp/(accu(rowdp + alpha)+tau));
+          double one = (c_d_k(d,k) + alpha(k))*accu(p_starxp/(accu(rowdp + alpha)+tau));
           double two = tau(k)*(p_starxp(k)/(accu(rowdp + alpha)+tau(k)));
           theta_post(d,k,j) = one+two;
 
@@ -675,9 +694,9 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
 
     } // close document for
 
-    ndk_mat.slice(iter) = n_d_k;
-    nkw_mat.slice(iter) = n_k_w;
-    nk_mat.slice(iter) = n_k;
+    cdk_mat.slice(iter) = c_d_k;
+    ckw_mat.slice(iter) = c_k_w;
+    ck_mat.slice(iter) = c_k;
 
   } // close iter for
 
@@ -738,9 +757,9 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
                             Rcpp::Named("beta")=beta,
                             Rcpp::Named("tau")=tau,
                             Rcpp::Named("p")=p,
-                            Rcpp::Named("n_d_k")=ndk_mat,
-                            Rcpp::Named("n_k_w")=nkw_mat,
-                            Rcpp::Named("n_k")=nk_mat,
+                            Rcpp::Named("c_d_k")=cdk_mat,
+                            Rcpp::Named("c_k_w")=ckw_mat,
+                            Rcpp::Named("c_k")=ck_mat,
                             Rcpp::Named("niter")=niter,
                             Rcpp::Named("keep_index")=keep_index,
                             Rcpp::Named("type_model")="EFLDA");
@@ -782,11 +801,11 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
 
   // COUNT MATRICES INITIALIZATION:
   // number of words assigned to topic k (col) in document d (row)
-  arma::mat n_d_k(D, K);
+  arma::mat c_d_k(D, K);
   // number of times word w is assigned to topic k
-  arma::mat n_k_w(K, V);
+  arma::mat c_k_w(K, V);
   // total number of times any word is assigned to topic k
-  arma::colvec n_k(K);
+  arma::colvec c_k(K);
 
   for(int d=0; d<D; d++){
 
@@ -807,9 +826,9 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
           int initZ = 0;
           // i-th element of z_d, index from 0 to (K-1)
           initZ = z_d(i)-1;
-          n_d_k(d, initZ ) += 1;
-          n_k_w(initZ, w) += 1;
-          n_k(initZ) += 1;
+          c_d_k(d, initZ ) += 1;
+          c_k_w(initZ, w) += 1;
+          c_k(initZ) += 1;
 
         } // close all ndw
         count += ndw;
@@ -864,9 +883,9 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
 
             // Decrease:
 
-            n_d_k(d, topic) -= 1;
-            n_k_w(topic, w) -= 1;
-            n_k(topic) -= 1;
+            c_d_k(d, topic) -= 1;
+            c_k_w(topic, w) -= 1;
+            c_k(topic) -= 1;
 
             // 'full_cond' will hold the parameters for the multinomial distribution.
             // It is zero-indexed.
@@ -877,9 +896,9 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
             double sum = 0;
 
             for (int k = 0; k < K; ++k) {
-              double prob = (n_d_k(d, k) + alpha(k));
-              prob = prob * (n_k_w(k, w) + beta(w));
-              prob = prob / (n_k(k) + bplus);
+              double prob = (c_d_k(d, k) + alpha(k));
+              prob = prob * (c_k_w(k, w) + beta(w));
+              prob = prob / (c_k(k) + bplus);
 
               full_cond[k] = prob;
               sum += prob;
@@ -896,9 +915,9 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
             z_d[i] = topic+1;
 
             // Increase:
-            n_d_k(d, topic)  += 1;
-            n_k_w(topic, w)  += 1;
-            n_k(topic) += 1;
+            c_d_k(d, topic)  += 1;
+            c_k_w(topic, w)  += 1;
+            c_k(topic) += 1;
           } // close ndw for
 
           count += ndw;
@@ -910,7 +929,7 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
           int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
-            phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta);
+            phi_post(w,k,j) = (c_k_w(k,w) + beta(w))/accu(c_k_w.row(k)+beta);
           }
 
         } // close keep index
@@ -926,7 +945,7 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
         int j = whichIndex(keep_index, iter+1);
 
         for(int k=0; k<K; k++){
-          theta_post(d,k,j) = (n_d_k(d,k) + alpha(k))/accu(n_d_k.row(d)+alpha);
+          theta_post(d,k,j) = (c_d_k(d,k) + alpha(k))/accu(c_d_k.row(d)+alpha);
         }
 
       } // close keep index
@@ -1010,17 +1029,17 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
 
 // [[Rcpp::export]]
 Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
-                                    arma::colvec& alpha,
-                                    arma::colvec& beta,
-                                    arma::colvec& tau,
-                                    arma::colvec& p,
-                                    arma::mat phi_post_mean,
-                                    int K,
-                                    int niter,
-                                    NumericVector& keep_index,
-                                    Rcpp::List z_init,
-                                    int verbose,
-                                    int nupd = 0){
+                                  arma::colvec& alpha,
+                                  arma::colvec& beta,
+                                  arma::colvec& tau,
+                                  arma::colvec& p,
+                                  arma::mat phi_post_mean,
+                                  int K,
+                                  int niter,
+                                  NumericVector& keep_index,
+                                  Rcpp::List z_init,
+                                  int verbose,
+                                  int nupd = 0){
 
   // data is a matrix with columns Word, Doc, Init_Topic (0, 1, 2)
   // alpha is the vector of alpha for the Dirichlet distr over topics
@@ -1048,23 +1067,23 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
   arma::mat Agamma = lgamma(A);
   arma::colvec logp = log(p);
 
-  arma::mat B(K,3);
-  arma::colvec log_t_long(K);
-  arma::colvec logsum(2);
+  arma::mat C(K,3);
+  arma::colvec log_t2(K);
+  arma::colvec log_p_star(2);
   arma::colvec t1(K);
 
-  arma::mat Bpost(K, 3);
+  arma::mat Cpost(K, 3);
   arma::colvec p_star(K);
 
   double bplus = accu(beta);
 
   // COUNT MATRICES INITIALIZATION:
   // number of words assigned to topic k (col) in document d (row)
-  arma::mat n_d_k(D, K);
+  arma::mat c_d_k(D, K);
   // number of times word w is assigned to topic k
-  arma::mat n_k_w(K, V);
+  arma::mat c_k_w(K, V);
   // total number of times any word is assigned to topic k
-  arma::colvec n_k(K);
+  arma::colvec c_k(K);
 
   for(int d=0; d<D; d++){
 
@@ -1083,9 +1102,9 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
           // i-th element of z_d
           initZ = z_d(i);
 
-          n_d_k(d, (initZ - 1) ) += 1;
-          n_k_w((initZ - 1),w) += 1;
-          n_k((initZ - 1)) += 1;
+          c_d_k(d, (initZ - 1) ) += 1;
+          c_k_w((initZ - 1),w) += 1;
+          c_k((initZ - 1)) += 1;
 
         }
         count += ndw;
@@ -1102,9 +1121,9 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
   }
 
   Rcpp::List z_init_up = clone(z_init);
-  arma::cube ndk_mat(D,K,niter);
-  arma::cube nkw_mat(K,V,niter);
-  arma::cube nk_mat(K,1,niter);
+  arma::cube cdk_mat(D,K,niter);
+  arma::cube ckw_mat(K,V,niter);
+  arma::cube ck_mat(K,1,niter);
   // Gibbs
   for(int iter=0; iter<niter; iter++){
 
@@ -1138,51 +1157,51 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
             // Decrease:
             // topic are indexed 1-k
             // This means that we will have to re-index from 0-(k-1)
-            n_d_k(d, topic) -= 1;
-            n_k_w(topic, w) -= 1;
-            n_k(topic) -= 1;
+            c_d_k(d, topic) -= 1;
+            c_k_w(topic, w) -= 1;
+            c_k(topic) -= 1;
 
             NumericVector full_cond(K);
-            arma::colvec rowd = arma::conv_to<arma::colvec>::from(n_d_k.row(d));
-            B.col(0) = alpha+tau+rowd;
-            B.col(1) = alpha+rowd;
-            B.col(2) = aplus+tau+1+accu(rowd);
+            arma::colvec rowd = arma::conv_to<arma::colvec>::from(c_d_k.row(d));
+            C.col(0) = alpha+tau+rowd;
+            C.col(1) = alpha+rowd;
+            C.col(2) = aplus+tau+1+accu(rowd);
 
-            arma::mat Bgamma = lgamma(B);
+            arma::mat Cgamma = lgamma(C);
 
-            arma::colvec fact_log_temp = logp+Agamma.col(0)-Agamma.col(1)+Agamma.col(2)+Bgamma.col(0)-Bgamma.col(1)-Bgamma.col(2);
+            arma::colvec term_log = logp+Agamma.col(0)-Agamma.col(1)+Agamma.col(2)+Cgamma.col(0)-Cgamma.col(1)-Cgamma.col(2);
 
             arma::colvec term_tau = (tau/(alpha+rowd));
 
             for(int k=0; k<K; k++){
-              t1(k) = ((n_d_k(d,k)+alpha(k))*(n_k_w(k,w) + beta(w))/(n_k(k)+bplus));
+              t1(k) = ((c_d_k(d,k)+alpha(k))*(c_k_w(k,w) + beta(w))/(c_k(k)+bplus));
             }
 
-            double logfact = log(sum(exp(fact_log_temp - max(fact_log_temp)))) + max(fact_log_temp);
+            double log_p_star_h = log(sum(exp(term_log - max(term_log)))) + max(term_log);
 
-            logsum(0) = logfact;
+            log_p_star(0) = log_p_star_h;
 
             for(int k=0; k<K; k++){
 
-              double second = fact_log_temp(k) + log(term_tau(k));
+              double log_p_star_k = term_log(k) + log(term_tau(k));
 
-              logsum(1) = second;
+              log_p_star(1) = log_p_star_k;
 
-              log_t_long(k) = log(sum(exp(logsum - max(logsum)))) + max(logsum);
+              log_t2(k) = log(sum(exp(log_p_star - max(log_p_star)))) + max(log_p_star);
             }
 
-            arma::colvec sumlog = log(t1) + log_t_long;
+            arma::colvec sumlog = log(t1) + log_t2;
 
-            full_cond = exp(log(t1) + log_t_long - (log(sum(exp(sumlog - max(sumlog)))) + max(sumlog)));
+            full_cond = exp(log(t1) + log_t2 - (log(sum(exp(sumlog - max(sumlog)))) + max(sumlog)));
             // Receive a zero-indexed topic from whichMultinom
             topic = whichMultinom(full_cond, d, w);
             // Add 1 to it to reindex in 1-k the topic
             z_d[i] = topic+1;
 
             // Increase:
-            n_d_k(d, topic)  += 1;
-            n_k_w(topic, w)  += 1;
-            n_k(topic) += 1;
+            c_d_k(d, topic)  += 1;
+            c_k_w(topic, w)  += 1;
+            c_k(topic) += 1;
           } // close ndw for
 
           count += ndw;
@@ -1194,7 +1213,7 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
           int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
-            phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta);
+            phi_post(w,k,j) = (c_k_w(k,w) + beta(w))/accu(c_k_w.row(k)+beta);
           }
 
         } // close keep index
@@ -1209,20 +1228,20 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
 
         int j = whichIndex(keep_index, iter+1);
 
-        arma::colvec rowdp = arma::conv_to<arma::colvec>::from(n_d_k.row(d));
-        Bpost.col(0) = alpha+tau+rowdp;
-        Bpost.col(1) = alpha+rowdp;
-        Bpost.col(2) = aplus+tau+1+accu(rowdp);
+        arma::colvec rowdp = arma::conv_to<arma::colvec>::from(c_d_k.row(d));
+        Cpost.col(0) = alpha+tau+rowdp;
+        Cpost.col(1) = alpha+rowdp;
+        Cpost.col(2) = aplus+tau+1+accu(rowdp);
 
-        arma::mat BgammaP = lgamma(Bpost);
+        arma::mat CgammaP = lgamma(Cpost);
 
-        p_star = logp+Agamma.col(0)+BgammaP.col(0)+Agamma.col(2)-BgammaP.col(1)-Agamma.col(1)-BgammaP.col(2);
+        p_star = logp+Agamma.col(0)+CgammaP.col(0)+Agamma.col(2)-CgammaP.col(1)-Agamma.col(1)-CgammaP.col(2);
         double ppp = log(sum(exp(p_star - max(p_star)))) + max(p_star);
         arma::colvec p_starxp = exp(p_star - ppp);
 
         for(int k=0; k<K; k++){
 
-          double one = (n_d_k(d,k) + alpha(k))*accu(p_starxp/(accu(rowdp + alpha)+tau));
+          double one = (c_d_k(d,k) + alpha(k))*accu(p_starxp/(accu(rowdp + alpha)+tau));
           double two = tau(k)*(p_starxp(k)/(accu(rowdp + alpha)+tau(k)));
           theta_post(d,k,j) = one+two;
 
@@ -1237,9 +1256,9 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
       }
 
     } // close document for
-    ndk_mat.slice(iter) = n_d_k;
-    nkw_mat.slice(iter) = n_k_w;
-    nk_mat.slice(iter) = n_k;
+    cdk_mat.slice(iter) = c_d_k;
+    ckw_mat.slice(iter) = c_k_w;
+    ck_mat.slice(iter) = c_k;
   } // close iter for
 
 
@@ -1310,9 +1329,9 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
                             Rcpp::Named("beta")=beta,
                             Rcpp::Named("tau")=tau,
                             Rcpp::Named("p")=p,
-                            Rcpp::Named("n_d_k")=ndk_mat,
-                            Rcpp::Named("n_k_w")=nkw_mat,
-                            Rcpp::Named("n_k")=nk_mat,
+                            Rcpp::Named("c_d_k")=cdk_mat,
+                            Rcpp::Named("c_k_w")=ckw_mat,
+                            Rcpp::Named("c_k")=ck_mat,
                             Rcpp::Named("niter")=niter,
                             Rcpp::Named("keep_index")=keep_index,
                             Rcpp::Named("type_model")="EFLDA");
