@@ -222,9 +222,9 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
 
   // COUNT MATRICES INITIALIZATION:
   // number of words assigned to topic k (col) in document d (row)
-  arma::mat n_d_k(D, K);
+  arma::mat c_d_k(D, K);
   // number of times word w is assigned to topic k
-  arma::mat n_k_w(K, V);
+  arma::mat c_k_w(K, V);
   // total number of times any word is assigned to topic k
   arma::colvec n_k(K);
 
@@ -247,8 +247,8 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
           int initZ = 0;
           // i-th element of z_d, index from 0 to (K-1)
           initZ = z_d(i)-1;
-          n_d_k(d, initZ ) += 1;
-          n_k_w(initZ, w) += 1;
+          c_d_k(d, initZ ) += 1;
+          c_k_w(initZ, w) += 1;
           n_k(initZ) += 1;
 
         } // close all ndw
@@ -273,11 +273,14 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
   for(int iter=0; iter<niter; iter++){
 
     // print the current completed work
-    if(iter == 1){
-      Rcpp::Rcout << "Completed:\t" << (iter) << "/" << niter << std::endl;
-    }
-    if((iter + 1) % nupd == 0){
-      Rcpp::Rcout << "Completed:\t" << (iter + 1) << "/" << niter << std::endl;
+    if(verbose > 0){
+      // print the current completed work
+      if(iter == 1){
+        Rcpp::Rcout << "Completed:\t" << (iter) << "/" << niter << std::endl;
+      }
+      if((iter + 1) % nupd == 0){
+        Rcpp::Rcout << "Completed:\t" << (iter + 1) << "/" << niter << std::endl;
+      }
     }
 
     for(int d=0; d<D; d++){
@@ -301,8 +304,8 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
 
             // Decrease:
 
-            n_d_k(d, topic) -= 1;
-            n_k_w(topic, w) -= 1;
+            c_d_k(d, topic) -= 1;
+            c_k_w(topic, w) -= 1;
             n_k(topic) -= 1;
 
             // 'full_cond' will hold the parameters for the multinomial distribution.
@@ -314,8 +317,8 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
             double sum = 0;
 
             for (int k = 0; k < K; ++k) {
-              double prob = (n_d_k(d, k) + alpha(k));
-              prob = prob * (n_k_w(k, w) + beta(w));
+              double prob = (c_d_k(d, k) + alpha(k));
+              prob = prob * (c_k_w(k, w) + beta(w));
               prob = prob / (n_k(k) + bplus);
 
               full_cond[k] = prob;
@@ -326,15 +329,15 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
             for (int k = 0; k < K; ++k) {
               full_cond[k] = full_cond[k] / sum;
             }
-
+            Rcpp::Rcout <<full_cond<< std::endl;
             // Receive a zero-indexed topic from whichMultinom
             topic = whichMultinom(full_cond, d, w);
             // Add 1 to it to reindex in 1-k the topic
             z_d[i] = topic+1;
 
             // Increase:
-            n_d_k(d, topic)  += 1;
-            n_k_w(topic, w)  += 1;
+            c_d_k(d, topic)  += 1;
+            c_k_w(topic, w)  += 1;
             n_k(topic) += 1;
           } // close ndw for
 
@@ -347,7 +350,8 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
           int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
-            phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta(w));
+            arma::colvec rowk = arma::conv_to<arma::colvec>::from(c_k_w.row(k));
+            phi_post(w,k,j) = (c_k_w(k,w) + beta(w))/accu(rowk+beta);
           }
 
         } // close keep index
@@ -367,7 +371,8 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
         int j = whichIndex(keep_index, iter+1);
 
         for(int k=0; k<K; k++){
-          theta_post(d,k,j) = (n_d_k(d,k) + alpha(k))/accu(n_d_k.row(d)+alpha(k));
+          arma::colvec rowd = arma::conv_to<arma::colvec>::from(c_d_k.row(d));
+          theta_post(d,k,j) = (c_d_k(d,k) + alpha(k))/accu(rowd+alpha);
 
         }
 
@@ -438,7 +443,6 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
                             Rcpp::Named("keep_index")=keep_index,
                             Rcpp::Named("type_model")="LDA");
 }
-
 
 // [[Rcpp::export]]
 Rcpp::List collapsed_efd_cpp(NumericMatrix data,
@@ -627,7 +631,7 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
           int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
-            phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta(w));
+            phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta);
           }
 
         } // close keep index
@@ -906,7 +910,7 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
           int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
-            phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta(w));
+            phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta);
           }
 
         } // close keep index
@@ -922,7 +926,7 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
         int j = whichIndex(keep_index, iter+1);
 
         for(int k=0; k<K; k++){
-          theta_post(d,k,j) = (n_d_k(d,k) + alpha(k))/accu(n_d_k.row(d)+alpha(k));
+          theta_post(d,k,j) = (n_d_k(d,k) + alpha(k))/accu(n_d_k.row(d)+alpha);
         }
 
       } // close keep index
@@ -1190,7 +1194,7 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
           int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
-            phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta(w));
+            phi_post(w,k,j) = (n_k_w(k,w) + beta(w))/accu(n_k_w.row(k)+beta);
           }
 
         } // close keep index
