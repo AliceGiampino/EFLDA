@@ -23,7 +23,7 @@ int whichOne(IntegerVector x) {
     }
   }
 
-  // If the element does not apper:
+  // If the element does not appear:
   if (index == -1) { Rcpp::Rcout << "Error: There is no corresponding element. Vector is " << x << std::endl;}
   // if the element appears return the index:
   return index;
@@ -329,7 +329,7 @@ Rcpp::List collapsed_lda_cpp(NumericMatrix& data,
             for (int k = 0; k < K; ++k) {
               full_cond[k] = full_cond[k] / sum;
             }
-            Rcpp::Rcout <<full_cond<< std::endl;
+
             // Receive a zero-indexed topic from whichMultinom
             topic = whichMultinom(full_cond, d, w);
             // Add 1 to it to reindex in 1-k the topic
@@ -627,7 +627,6 @@ Rcpp::List collapsed_efd_cpp(NumericMatrix data,
 
             full_cond = exp(log(t1) + log_t2 - (log(denom) + max(sumlog)));
 
-            Rcpp::Rcout << full_cond << std::endl;
 
             // Receive a zero-indexed topic from whichMultinom
             topic = whichMultinom(full_cond, d, w);
@@ -929,7 +928,8 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
           int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
-            phi_post(w,k,j) = (c_k_w(k,w) + beta(w))/accu(c_k_w.row(k)+beta);
+            arma::colvec rowk = arma::conv_to<arma::colvec>::from(c_k_w.row(k));
+            phi_post(w,k,j) = (c_k_w(k,w) + beta(w))/accu(rowk+beta);
           }
 
         } // close keep index
@@ -945,7 +945,8 @@ Rcpp::List collapsed_lda_cpp_pred(NumericMatrix& data,
         int j = whichIndex(keep_index, iter+1);
 
         for(int k=0; k<K; k++){
-          theta_post(d,k,j) = (c_d_k(d,k) + alpha(k))/accu(c_d_k.row(d)+alpha);
+          arma::colvec rowd = arma::conv_to<arma::colvec>::from(c_d_k.row(d));
+          theta_post(d,k,j) = (c_d_k(d,k) + alpha(k))/accu(rowd+alpha);
         }
 
       } // close keep index
@@ -1213,7 +1214,8 @@ Rcpp::List collapsed_efd_cpp_pred(NumericMatrix data,
           int j = whichIndex(keep_index, iter+1);
 
           for(int k=0; k<K; k++){
-            phi_post(w,k,j) = (c_k_w(k,w) + beta(w))/accu(c_k_w.row(k)+beta);
+            arma::colvec rowk = arma::conv_to<arma::colvec>::from(c_k_w.row(k));
+            phi_post(w,k,j) = (c_k_w(k,w) + beta(w))/accu(rowk+beta);
           }
 
         } // close keep index
