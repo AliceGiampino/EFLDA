@@ -36,7 +36,7 @@ transform_data <- function(data_DTM){
     }
 
   }
-  if(class(data_DTM)[1]=="matrix") stop("A DTM must be passed")#data <- as.matrix(data_DTM)
+  if(class(data_DTM)[1]=="matrix") data <- as.matrix(data_DTM)
 
   rownames(data) <- NULL
 
