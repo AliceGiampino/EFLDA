@@ -11,7 +11,7 @@
 #' @param niter number of iteration
 #' @param warmup percentage of the warmup
 #' @param seed of the analysis
-#' @param init.z initial values of the topic, it is a list with D elements and each has length Nd
+#' @param z_init initial values of the topic, it is a list with D elements and each has length Nd
 #' @param verbose if you want print of the iteration
 #' @param all.post True if you want all the niter samples from the posterior
 #' @param data_output True if you want the training data in the output
