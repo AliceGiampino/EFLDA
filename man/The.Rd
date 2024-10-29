@@ -28,6 +28,14 @@ Random realization from extended flexible Dirichlet
 \item \code{rEFDir()}: function generates random values from the extended flexible Dirichlet (EFD) distribution.
 
 }}
+\examples{
+n <- 4
+alpha <- c(4, 6, 2)
+p <- c(.2, .3, .5)
+tau <- c(7, 2, 6)
+rEFDir(n,alpha,p,tau,label=FALSE)
+
+}
 \references{
 {
 Ongaro, A., Migliorati, S., Ascari, R. (2020). A new mixture model on the simplex. Statistics and Computing, \bold{30}, 749-770, doi: 10.1007/s11222-019-09920-x.

@@ -10,8 +10,7 @@
 #'
 #' @return A matrix with \code{n} rows, where each row represents a sample from the EFD.
 #'
-#' @example
-#'
+#' @examples
 #' n <- 4
 #' alpha <- c(4, 6, 2)
 #' p <- c(.2, .3, .5)
