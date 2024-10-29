@@ -21,8 +21,8 @@
 collapsed_gibbs <- function(data_DTM,
                             # data_DTM is a DTM, it can be also a matrix with columns Word and Doc or data.frame
                              K, alpha=NULL, beta=NULL, tau=NULL, p=NULL,type="LDA",
-                             thin=1, niter=5000, warmup=0.5, seed=42, init.z=NULL, verbose=T,
-                             all.post = F, data_output=F
+                             thin=1, niter=5000, warmup=0.5, seed=42, z_init=NULL, verbose=T,
+                             all.post = F, data_output=T
 ){
   # data_DTM is a DTM, it can be also a matrix with columns different words
   # and rows different documents, the values are the counts of each word in each document
@@ -39,7 +39,7 @@ collapsed_gibbs <- function(data_DTM,
   V = ncol(data)
   D = nrow(data)
 
-  if(is.null(init.z)){
+  if(is.null(z_init)){
     set.seed(seed)
     z_init <- list()
     for(d in 1:D){
