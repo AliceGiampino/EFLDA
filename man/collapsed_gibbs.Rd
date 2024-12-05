@@ -16,7 +16,7 @@ collapsed_gibbs(
   niter = 5000,
   warmup = 0.5,
   seed = 42,
-  init.z = NULL,
+  z_init = NULL,
   verbose = T,
   all.post = F,
   data_output = T
@@ -45,7 +45,7 @@ collapsed_gibbs(
 
 \item{seed}{of the analysis}
 
-\item{init.z}{initial values of the topic, it is a list with D elements and each has length Nd}
+\item{z_init}{initial values of the topic, it is a list with D elements and each has length Nd}
 
 \item{verbose}{if you want print of the iteration}
 

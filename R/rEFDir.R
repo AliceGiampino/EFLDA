@@ -1,13 +1,30 @@
-#' Random realization from Extended Flexible Dirichlet
+#' Random realization from extended flexible Dirichlet
 #'
-#' @param n number of words
-#' @param alpha parameter of the Dirichlet
-#' @param p vector of probabilities
-#' @param tau parameter that changes the mean of the clusters
-#' @param label if True report the topic?
+#' @describeIn The function generates random values from the extended flexible Dirichlet (EFD) distribution.
 #'
-#' @return random realization from EFD
+#' @param n the number of values to generate.
+#' @param alpha a vector with positive elements.
+#' @param p a vector with positive elements summing to 1.
+#' @param tau a vector with positive elements.
+#' @param label logical. If TRUE, an additional column pointing the component of the mixture generating the observation is returned.
+#'
+#' @return A matrix with \code{n} rows, where each row represents a sample from the EFD.
+#'
+#' @examples
+#' n <- 4
+#' alpha <- c(4, 6, 2)
+#' p <- c(.2, .3, .5)
+#' tau <- c(7, 2, 6)
+#' rEFDir(n,alpha,p,tau,label=FALSE)
+#'
+#' @references{
+#'  Ongaro, A., Migliorati, S., Ascari, R. (2020). A new mixture model on the simplex. Statistics and Computing, \bold{30}, 749-770, doi: 10.1007/s11222-019-09920-x.
+#' }
+#'
+#' @import stats
+#'
 #' @export
+#'
 rEFDir <- function(n,alpha,p,tau,label=FALSE){
   D<-length(alpha)
   multin<-matrix(stats::rmultinom(n,1,p), ncol=D,byrow=TRUE)
