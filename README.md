@@ -17,7 +17,7 @@ devtools::install_github("AliceGiampino/EFLDA")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you how to use the package:
 
 ``` r
 # load the package:
@@ -49,7 +49,7 @@ N <- sum(N_d_vec)
 theta_d <- matrix(NA, ncol=K, nrow=D)
 alloc_real <- c()
 for(d in 1:D){
-
+  
   # EFLDA (FLDA: taus are all equal)
   all <- as.vector(rEFDir(1, alpha=alpha, tau=tau, p=p,label=T))
   theta_d[d,] <- all[-1]
@@ -143,8 +143,8 @@ flda <- collapsed_gibbs(data_doc_train, K = K,
                         warmup=0.5, seed=42, init.z=NULL,
                         verbose=T,
                         all.post = F, data_output=T)
-                        
-                        
+
+
 # Find the cluster allocation from the FD mixture:
 
 cl_alloc = cluster_allocation(flda)
@@ -167,7 +167,7 @@ L_p_vec = rep(0,length(perms))
 theta_mean_post <- as.data.frame(apply(flda$theta_post, c(1,2) , mean))
 
 for(i in 1:length(perms)){
-
+  
   L_p = 0
   for(k in 1:K){
     L_p = L_p + sum((theta_d[,k] - theta_mean_post[,perms[[i]][k]])^p_norm)
@@ -187,26 +187,45 @@ relabeled_cl_allocation <- mapping[as.character(cl_allocation)]
 
 table(relabeled_cl_allocation, alloc_real)                        
 
+# EFD/FD on Phi
+alpha_phi <- rep(50,K)/K
+p_phi <- rep(1/V, V)
+beta_phi <- rep(50,V)/V
+tau_phi <- rep(mean(beta_phi), V)
+
+flda_phi <- collapsed_gibbs(data_doc_train, K = K,
+                            alpha=alpha_phi, 
+                            beta=beta_phi, 
+                            tau=tau_phi, 
+                            p=p_phi,
+                            type="EFD_Phi", thin=1, niter=niter,
+                            warmup=0.5, seed=42, init.z=NULL,
+                            verbose=T,
+                            all.post = F, data_output=T)
+
 
 # Perplexity on train data:
 
 perplexity(lda) 
 perplexity(flda) 
+perplexity(flda_phi)
 
 # Perplexity for train data using the posterior means:
 
 perplexity(lda, posterior_mean=TRUE) 
 perplexity(flda, posterior_mean=TRUE) 
-
+perplexity(flda_phi, posterior_mean=TRUE) 
 
 # Perplexity for new data:
 
 perplexity(lda, newdata=data_doc_test)
 perplexity(flda, newdata=data_doc_test)
+perplexity(flda_phi, newdata=data_doc_test)
 
 # Perplexity for new data using the posterior means:
 
 perplexity(lda, newdata=data_doc_test, posterior_mean=TRUE)
 perplexity(flda, newdata=data_doc_test, posterior_mean=TRUE)
+perplexity(flda_phi, newdata=data_doc_test, posterior_mean=TRUE)
 
 ```
