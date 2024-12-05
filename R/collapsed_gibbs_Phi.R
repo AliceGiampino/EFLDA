@@ -1,4 +1,4 @@
-#' Collapsed Gibbs sampling
+#' Collapsed Gibbs sampling - Phi
 #'
 #' @param data_DTM data in format DTM
 #' @param K number of topic
@@ -6,7 +6,7 @@
 #' @param beta parameter of the Dirichlet
 #' @param tau parameter of the EFD changes mean of clusters
 #' @param p probabilities vector
-#' @param type LDA or EFD or EFD_Phi
+#' @param type LDA or EFD on Phi
 #' @param thin thinning period
 #' @param niter number of iteration
 #' @param warmup percentage of the warmup
@@ -18,17 +18,17 @@
 #'
 #' @return list of the results from the gibbs sampling
 #' @export
-collapsed_gibbs <- function(data_DTM,
+collapsed_gibbs_Phi <- function(data_DTM,
                             # data_DTM is a DTM, it can be also a matrix with columns Word and Doc or data.frame
-                             K, alpha=NULL, beta=NULL, tau=NULL, p=NULL,type="LDA",
-                             thin=1, niter=5000, warmup=0.5, seed=42, init.z=NULL, verbose=T,
-                             all.post = F, data_output=T
+                            K, alpha=NULL, beta=NULL, tau=NULL, p=NULL,type="LDA",
+                            thin=1, niter=5000, warmup=0.5, seed=42, init.z=NULL, verbose=T,
+                            all.post = F, data_output=T
 ){
   # data_DTM is a DTM, it can be also a matrix with columns different words
   # and rows different documents, the values are the counts of each word in each document
   data <- transform_data(data_DTM)
 
-  if(!(type %in% c("LDA","EFD", "EFD_Phi"))) stop("type must be either LDA or EFD or EFD_Phi.")
+  if(!(type %in% c("LDA","EFD_Phi"))) stop("type must be either LDA or EFD_Phi.")
   if(type=="EFD" & (is.null(tau)|is.null(p))) stop("You must specify both tau and p.")
   if(sum(p) != 1 & any(p<=0)) stop("Elements of p must be in the (0,1) interval and must suming to 1.")
 
@@ -63,10 +63,6 @@ collapsed_gibbs <- function(data_DTM,
     res <- collapsed_lda_cpp(data=data, K=K, alpha=alpha, beta=beta,
                              z_init = z_init,
                              niter=niter, keep_index = keep_index,
-                             verbose = vb, nupd = nupd)
-  } else if(type=="EFD"){
-    res <- collapsed_efd_cpp(data=data, K=K, alpha=alpha, beta=beta, tau=tau, p=p,
-                             z_init = z_init, niter=niter, keep_index = keep_index,
                              verbose = vb, nupd = nupd)
   } else if(type=="EFD_Phi"){
     res <- collapsed_efd_cpp_Phi(data=data, K=K, alpha=alpha, beta=beta, tau=tau, p=p,

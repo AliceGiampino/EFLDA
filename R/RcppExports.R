@@ -49,3 +49,11 @@ collapsed_efd_cpp_pred <- function(data, alpha, beta, tau, p, phi_post_mean, K, 
     .Call(`_EFLDA_collapsed_efd_cpp_pred`, data, alpha, beta, tau, p, phi_post_mean, K, niter, keep_index, z_init, verbose, nupd)
 }
 
+collapsed_efd_cpp_Phi <- function(data, alpha, beta, tau, p, K, niter, keep_index, z_init, verbose, nupd = 0L) {
+    .Call(`_EFLDA_collapsed_efd_cpp_Phi`, data, alpha, beta, tau, p, K, niter, keep_index, z_init, verbose, nupd)
+}
+
+collapsed_efd_cpp_Phi_pred <- function(data, alpha, beta, tau, p, phi_post_mean, K, niter, keep_index, z_init, verbose, nupd = 0L) {
+    .Call(`_EFLDA_collapsed_efd_cpp_Phi_pred`, data, alpha, beta, tau, p, phi_post_mean, K, niter, keep_index, z_init, verbose, nupd)
+}
+

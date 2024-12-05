@@ -123,7 +123,27 @@ perplexity <- function(model, newdata=NULL, posterior_mean = FALSE){
       model <- rlist::list.append(model,data=newdata)
 
     }
+    if(method=="EFLDA_Phi"){
 
+      tau = model$tau
+      p = model$p
+      K = ncol(theta_post_mean)
+
+      model <- collapsed_efd_cpp_Phi_pred(newdata,
+                                      phi_post_mean = as.matrix(phi_post_mean),
+                                      alpha=alpha,
+                                      beta=beta,
+                                      tau = tau,
+                                      p = p,
+                                      K = K,
+                                      niter=niter,
+                                      keep_index = keep_index,
+                                      z_init=z_init_test,
+                                      verbose=0)
+
+      model <- rlist::list.append(model,data=newdata)
+
+    }
     if(posterior_mean == TRUE){
 
       # phi_mean train and theta_mean test
